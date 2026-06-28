@@ -96,8 +96,6 @@ public class XrayConfigBuilder : IXrayConfigBuilder
                 ["name"] = "xray_tun",
                 ["MTU"] = 9000,
                 ["gateway"] = new JsonArray { "172.18.0.1/30", "fdfe:dcba:9876::1/126" },
-                ["autoSystemRoutingTable"] = new JsonArray { "0.0.0.0/0", "::/0" },
-                ["autoOutboundsInterface"] = "auto",
             },
             ["sniffing"] = new JsonObject
             {

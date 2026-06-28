@@ -311,8 +311,7 @@ public class ServerTester : IServerTester
 
     private static string GetXrayPath()
     {
-        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return Path.Combine(localAppData, "AIXray", "runtime", "xray.exe");
+        return Path.Combine(AppContext.BaseDirectory, "cores", "xray.exe");
     }
 
     private static int GetAvailablePort()

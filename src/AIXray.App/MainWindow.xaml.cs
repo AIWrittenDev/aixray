@@ -27,7 +27,6 @@ public partial class MainWindow : FluentWindow
             Hide();
         }
 
-        // پشتیبانی از Ctrl+V برای پیست از کلیپ‌بورد
         PreviewKeyDown += (_, e) =>
         {
             if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
@@ -47,6 +46,23 @@ public partial class MainWindow : FluentWindow
                 _ = vm.InitializeCommand.ExecuteAsync(null);
             }
         };
+    }
+
+    private void DataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is System.Windows.Controls.DataGrid dg)
+        {
+            var hit = e.OriginalSource as DependencyObject;
+            while (hit != null && hit != dg)
+            {
+                if (hit is System.Windows.Controls.DataGridRow row)
+                {
+                    dg.SelectedItem = row.Item;
+                    break;
+                }
+                hit = System.Windows.Media.VisualTreeHelper.GetParent(hit);
+            }
+        }
     }
 
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)

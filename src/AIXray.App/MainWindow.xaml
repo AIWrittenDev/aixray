@@ -152,7 +152,9 @@
                               AutoGenerateColumns="False" IsReadOnly="True"
                               Background="Transparent" BorderThickness="0"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                              SelectionMode="Single" CanUserAddRows="False">
+                              SelectionMode="Single" CanUserAddRows="False"
+                              SelectionUnit="FullRow"
+                              MouseRightButtonDown="DataGrid_MouseRightButtonDown">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="انتخاب و اتصال" Command="{Binding ConnectCommand}"

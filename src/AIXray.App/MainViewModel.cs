@@ -275,6 +275,13 @@ public partial class MainViewModel : ObservableObject
     private async Task CreateGroupAsync()
     {
         var dialog = new CreateGroupDialog();
+        var mainWindow = System.Windows.Application.Current.MainWindow;
+        if (mainWindow != null)
+        {
+            dialog.Owner = mainWindow;
+            mainWindow.Show();
+            mainWindow.Activate();
+        }
         if (dialog.ShowDialog() != true) return;
 
         var group = new Group
@@ -326,6 +333,13 @@ public partial class MainViewModel : ObservableObject
     private async Task DeleteServerAsync(Server? server)
     {
         if (server == null) return;
+        var result = System.Windows.MessageBox.Show(
+            $"آیا از حذف '{server.Remark}' مطمئن هستید؟",
+            "تأیید حذف",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question);
+        if (result != System.Windows.MessageBoxResult.Yes) return;
+
         await _serverRepo.DeleteAsync(server.Id);
         await LoadServersAsync();
         StatusText = "سرور حذف شد";
@@ -375,6 +389,13 @@ public partial class MainViewModel : ObservableObject
     {
         if (server == null) return;
         var dialog = new EditServerDialog(server);
+        var mainWindow = System.Windows.Application.Current.MainWindow;
+        if (mainWindow != null)
+        {
+            dialog.Owner = mainWindow;
+            mainWindow.Show();
+            mainWindow.Activate();
+        }
         if (dialog.ShowDialog() == true && dialog.Result != null)
         {
             _ = UpdateServerAsync(dialog.Result);
@@ -401,6 +422,13 @@ public partial class MainViewModel : ObservableObject
     private void OpenCustomConfig()
     {
         var dialog = new CustomConfigDialog();
+        var mainWindow = System.Windows.Application.Current.MainWindow;
+        if (mainWindow != null)
+        {
+            dialog.Owner = mainWindow;
+            mainWindow.Show();
+            mainWindow.Activate();
+        }
         if (dialog.ShowDialog() == true && dialog.Result != null)
         {
             _ = AddCustomServerAsync(dialog.Result);
@@ -420,6 +448,13 @@ public partial class MainViewModel : ObservableObject
     {
         var currentSettings = await _settingsRepo.LoadAsync();
         var dialog = new SettingsDialog(currentSettings);
+        var mainWindow = System.Windows.Application.Current.MainWindow;
+        if (mainWindow != null)
+        {
+            dialog.Owner = mainWindow;
+            mainWindow.Show();
+            mainWindow.Activate();
+        }
         if (dialog.ShowDialog() == true)
         {
             currentSettings.Mode = dialog.SelectedMode;
