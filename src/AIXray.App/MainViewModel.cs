@@ -167,7 +167,10 @@ public partial class MainViewModel : ObservableObject
         {
             StatusText = "حالت TUN نیاز به دسترسی admin دارد - در حال اجرای مجدد...";
             await Task.Delay(500);
-            _tunManager.RestartAsAdmin();
+            if (_tunManager.RestartAsAdmin())
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
             return;
         }
 
@@ -271,22 +274,18 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateGroupAsync()
     {
-        if (string.IsNullOrWhiteSpace(NewGroupName))
-        {
-            StatusText = "نام گروه را وارد کنید";
-            return;
-        }
+        var dialog = new CreateGroupDialog();
+        if (dialog.ShowDialog() != true) return;
 
         var group = new Group
         {
-            Name = NewGroupName,
-            SubscriptionUrl = string.IsNullOrWhiteSpace(NewGroupSubscriptionUrl) ? null : NewGroupSubscriptionUrl,
-            AutoUpdate = !string.IsNullOrWhiteSpace(NewGroupSubscriptionUrl),
+            Name = dialog.GroupName,
+            SubscriptionUrl = dialog.SubscriptionUrl,
+            AutoUpdate = dialog.AutoUpdate,
+            UpdateIntervalMinutes = dialog.UpdateIntervalMinutes,
         };
 
         await _groupRepo.AddAsync(group);
-        NewGroupName = string.Empty;
-        NewGroupSubscriptionUrl = string.Empty;
         await LoadGroupsAsync();
         StatusText = $"گروه '{group.Name}' ایجاد شد";
     }

@@ -89,31 +89,20 @@ public class XrayConfigBuilder : IXrayConfigBuilder
     {
         return new JsonObject
         {
-            ["tag"] = "tun-in",
+            ["tag"] = "tun",
             ["protocol"] = "tun",
             ["settings"] = new JsonObject
             {
-                ["name"] = "aixray-tun",
-                ["mtu"] = 1500,
-                ["address"] = new JsonArray { "10.0.0.1/24", "fd00::1/64" },
-                ["gateway"] = "10.0.0.1",
-                ["stack"] = "mixed",  // dual-stack IPv4+IPv6
+                ["name"] = "xray_tun",
+                ["MTU"] = 9000,
+                ["gateway"] = new JsonArray { "172.18.0.1/30", "fdfe:dcba:9876::1/126" },
+                ["autoSystemRoutingTable"] = new JsonArray { "0.0.0.0/0", "::/0" },
+                ["autoOutboundsInterface"] = "auto",
             },
             ["sniffing"] = new JsonObject
             {
                 ["enabled"] = true,
-                ["destOverride"] = new JsonArray { "http", "tls", "fakedns" },
-                ["routeOnly"] = false,
-            },
-            ["streamSettings"] = new JsonObject
-            {
-                ["sockopt"] = new JsonObject
-                {
-                    ["tun"] = new JsonObject
-                    {
-                        ["file"] = Path.Combine(AppContext.BaseDirectory, "cores", "wintun.dll"),
-                    },
-                },
+                ["destOverride"] = new JsonArray { "http", "tls" },
             },
         };
     }
