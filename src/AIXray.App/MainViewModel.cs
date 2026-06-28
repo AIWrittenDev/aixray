@@ -80,10 +80,16 @@ public partial class MainViewModel : ObservableObject
     // وقتی حالت تغییر کند و متصل باشیم، اتصال مجددا برقرار می‌شود
     partial void OnCurrentModeChanged(ConnectionMode value)
     {
+        _ = SaveSettingsAsync();
         if (IsConnected && SelectedServer != null)
         {
             _ = RestartWithNewModeAsync();
         }
+    }
+
+    partial void OnAutoConnectChanged(bool value)
+    {
+        _ = SaveSettingsAsync();
     }
 
     private async Task RestartWithNewModeAsync()
@@ -113,12 +119,15 @@ public partial class MainViewModel : ObservableObject
             await LoadGroupsAsync();
             await LoadServersAsync();
 
-            if (AutoConnect)
+            var savedSettings = await _settingsRepo.LoadAsync();
+            CurrentMode = savedSettings.Mode;
+            AutoConnect = savedSettings.AutoConnect;
+
+            if (savedSettings.AutoConnect)
             {
                 StatusText = "اتصال خودکار...";
-                var settings = await _settingsRepo.LoadAsync();
-                settings.Mode = CurrentMode;
-                var connected = await _autoConnectService.ConnectToBestAsync(settings);
+                savedSettings.Mode = CurrentMode;
+                var connected = await _autoConnectService.ConnectToBestAsync(savedSettings);
                 if (connected)
                     StatusText = "اتصال خودکار: متصل";
                 else
@@ -321,6 +330,11 @@ public partial class MainViewModel : ObservableObject
             var content = await _subscriptionFetcher.FetchAndDecodeAsync(group.SubscriptionUrl);
             var servers = _parserService.ParseLinks(content);
 
+            // حذف سرورهای قدیمی این گروه برای جلوگیری از تکرار
+            var existingServers = await _serverRepo.GetByGroupAsync(group.Id);
+            foreach (var old in existingServers)
+                await _serverRepo.DeleteAsync(old.Id);
+
             foreach (var server in servers)
             {
                 server.GroupId = group.Id;
@@ -425,7 +439,8 @@ public partial class MainViewModel : ObservableObject
     private void CopyShareLink(Server? server)
     {
         if (server == null) return;
-        System.Windows.Clipboard.SetText(server.Url);
+        try { System.Windows.Clipboard.SetText(server.Url); }
+        catch { }
         StatusText = "لینک کپی شد";
     }
 

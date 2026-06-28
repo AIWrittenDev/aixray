@@ -7,12 +7,12 @@ namespace AIXray.App;
 public partial class EditServerDialog : FluentWindow
 {
     public Server? Result { get; private set; }
-    private readonly long _serverId;
+    private readonly Server _original;
 
     public EditServerDialog(Server server)
     {
         InitializeComponent();
-        _serverId = server.Id;
+        _original = server;
 
         RemarkBox.Text = server.Remark;
         AddressBox.Text = server.Address;
@@ -51,9 +51,16 @@ public partial class EditServerDialog : FluentWindow
 
     private void OnSave(object sender, RoutedEventArgs e)
     {
-        if (!int.TryParse(PortBox.Text, out var port) || port <= 0)
+        if (string.IsNullOrWhiteSpace(AddressBox.Text))
         {
-            System.Windows.MessageBox.Show("پورت نامعتبر است", "خطا",
+            System.Windows.MessageBox.Show("آدرس سرور را وارد کنید", "خطا",
+                System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        if (!int.TryParse(PortBox.Text, out var port) || port <= 0 || port > 65535)
+        {
+            System.Windows.MessageBox.Show("پورت نامعتبر است (1-65535)", "خطا",
                 System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             return;
         }
@@ -90,20 +97,42 @@ public partial class EditServerDialog : FluentWindow
             ? $"{address}:{port}"
             : RemarkBox.Text.Trim();
 
+        var credential = CredentialBox.Text.Trim();
+
         Result = new Server
         {
-            Id = _serverId,
+            Id = _original.Id,
+            GroupId = _original.GroupId,
             Remark = remark,
             Protocol = protocol,
             Address = address,
             Port = port,
-            Uuid = CredentialBox.Text.Trim(),
-            Password = CredentialBox.Text.Trim(),
+            Uuid = protocol == Protocol.Vless || protocol == Protocol.Vmess ? credential : _original.Uuid,
+            Encryption = _original.Encryption,
+            Password = protocol == Protocol.Trojan || protocol == Protocol.Shadowsocks ? credential : _original.Password,
+            Method = _original.Method,
+            Flow = FlowBox.Text.Trim(),
+            AlterId = _original.AlterId,
             Network = network,
             Security = security,
             Sni = SniBox.Text.Trim(),
-            Flow = FlowBox.Text.Trim(),
-            Url = $"{protocol.ToXrayName()}://{CredentialBox.Text.Trim()}@{address}:{port}#{remark}",
+            Fingerprint = _original.Fingerprint,
+            Alpn = _original.Alpn,
+            PublicKey = _original.PublicKey,
+            ShortId = _original.ShortId,
+            SpiderX = _original.SpiderX,
+            WsPath = _original.WsPath,
+            WsHost = _original.WsHost,
+            GrpcServiceName = _original.GrpcServiceName,
+            GrpcMultiMode = _original.GrpcMultiMode,
+            HttpHost = _original.HttpHost,
+            HttpPath = _original.HttpPath,
+            XhttpExtra = _original.XhttpExtra,
+            Url = _original.Url,
+            LatencyMs = _original.LatencyMs,
+            IsActive = _original.IsActive,
+            LastTest = _original.LastTest,
+            AddedAt = _original.AddedAt,
         };
 
         DialogResult = true;

@@ -242,12 +242,11 @@
 
                 <!-- Mode selector -->
                 <ComboBox Grid.Column="2" Width="160" Margin="0,0,16,0"
-                          SelectedValue="{Binding CurrentMode}"
-                          SelectedValuePath="Tag"
+                          SelectedIndex="{Binding CurrentMode, Converter={StaticResource ConnectionModeConverter}}"
                           VerticalAlignment="Center">
-                    <ComboBoxItem Content="پروکسی سیستم" Tag="SystemProxy" />
-                    <ComboBoxItem Content="TUN (VPN)" Tag="Tun" />
-                    <ComboBoxItem Content="مستقیم" Tag="Direct" />
+                    <ComboBoxItem Content="پروکسی سیستم" />
+                    <ComboBoxItem Content="TUN (VPN)" />
+                    <ComboBoxItem Content="مستقیم" />
                 </ComboBox>
 
                 <!-- Connect / Disconnect toggle -->

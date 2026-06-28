@@ -56,8 +56,11 @@ public class SystemTrayManager : IDisposable
 
     public void ExitApplication()
     {
-        _notifyIcon.Visible = false;
-        _notifyIcon.Dispose();
+        if (_notifyIcon != null)
+        {
+            _notifyIcon.Visible = false;
+            _notifyIcon.Dispose();
+        }
         System.Windows.Application.Current.Shutdown();
     }
 

@@ -12,6 +12,7 @@
 
             <converters:ConnectButtonConverter x:Key="ConnectButtonConverter" />
             <converters:ConnectIconConverter x:Key="ConnectIconConverter" />
+            <converters:ConnectionModeConverter x:Key="ConnectionModeConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

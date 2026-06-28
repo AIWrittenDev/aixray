@@ -26,6 +26,8 @@ public partial class App : System.Windows.Application
         {
             var ex = args.ExceptionObject as Exception;
             File.WriteAllText(LogPath, $"[CRASH]\n{ex}\n{DateTime.Now}");
+            System.Windows.MessageBox.Show($"خطای بحرانی:\n{ex?.Message}", "AIXray",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         };
         DispatcherUnhandledException += (_, args) =>
         {
@@ -42,12 +44,19 @@ public partial class App : System.Windows.Application
             var db = Services.GetRequiredService<IDatabaseInitializer>();
             await db.InitializeAsync();
 
-            // بستن xray هنگام خروج برنامه
+            // بستن xray و غیرفعال‌سازی پروکسی هنگام خروج برنامه
             Exit += (_, _) =>
             {
+                try
+                {
+                    var proxyMgr = Services.GetService(typeof(ISystemProxyManager)) as ISystemProxyManager;
+                    proxyMgr?.Disable();
+                }
+                catch { }
+
                 foreach (var proc in Process.GetProcessesByName("xray"))
                 {
-                    try { proc.Kill(entireProcessTree: true); }
+                    try { proc.Kill(entireProcessTree: true); proc.Dispose(); }
                     catch { }
                 }
             };

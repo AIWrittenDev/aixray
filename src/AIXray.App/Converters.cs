@@ -27,17 +27,35 @@ public class ConnectIconConverter : IValueConverter
         throw new NotImplementedException();
 }
 
-public class ConnectToggleConverter : IValueConverter
+public class ConnectionModeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (parameter is MainWindow window && window.DataContext is MainViewModel vm)
+        if (value is ConnectionMode mode)
         {
-            return value is true ? vm.DisconnectCommand : vm.ConnectCommand;
+            return mode switch
+            {
+                ConnectionMode.SystemProxy => 0,
+                ConnectionMode.Tun => 1,
+                ConnectionMode.Direct => 2,
+                _ => 0,
+            };
         }
-        return value;
+        return 0;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-        throw new NotImplementedException();
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is int idx)
+        {
+            return idx switch
+            {
+                0 => ConnectionMode.SystemProxy,
+                1 => ConnectionMode.Tun,
+                2 => ConnectionMode.Direct,
+                _ => ConnectionMode.SystemProxy,
+            };
+        }
+        return ConnectionMode.SystemProxy;
+    }
 }

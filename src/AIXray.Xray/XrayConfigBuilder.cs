@@ -94,7 +94,7 @@ public class XrayConfigBuilder : IXrayConfigBuilder
             ["settings"] = new JsonObject
             {
                 ["name"] = "xray_tun",
-                ["MTU"] = 9000,
+                ["MTU"] = 1500,
                 ["gateway"] = new JsonArray { "172.18.0.1/30", "fdfe:dcba:9876::1/126" },
             },
             ["sniffing"] = new JsonObject

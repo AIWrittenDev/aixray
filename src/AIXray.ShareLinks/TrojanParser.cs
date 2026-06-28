@@ -68,6 +68,7 @@ public class TrojanParser : IShareLinkParser
                 GrpcServiceName = queryParams.GetValueOrDefault("serviceName"),
                 HttpPath = queryParams.GetValueOrDefault("path"),
                 HttpHost = queryParams.GetValueOrDefault("host"),
+                XhttpExtra = queryParams.GetValueOrDefault("extra"),
             };
 
             server.Url = link;
@@ -90,7 +91,9 @@ public class TrojanParser : IShareLinkParser
             address = input.Substring(1, closeBracket - 1);
             var remaining = input.Substring(closeBracket + 1);
             if (remaining.StartsWith(':'))
-                int.TryParse(remaining.Substring(1), out port);
+            {
+                if (!int.TryParse(remaining.Substring(1), out port) || port <= 0) return false;
+            }
             else port = 443;
             return true;
         }
@@ -98,7 +101,7 @@ public class TrojanParser : IShareLinkParser
         var colonIdx = input.LastIndexOf(':');
         if (colonIdx < 0) return false;
         address = input.Substring(0, colonIdx);
-        return int.TryParse(input.Substring(colonIdx + 1), out port);
+        return int.TryParse(input.Substring(colonIdx + 1), out port) && port > 0;
     }
 
     private static Dictionary<string, string> ParseQueryString(string query)

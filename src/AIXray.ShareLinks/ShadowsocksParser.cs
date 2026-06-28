@@ -129,7 +129,9 @@ public class ShadowsocksParser : IShareLinkParser
             address = input.Substring(1, closeBracket - 1);
             var remaining = input.Substring(closeBracket + 1);
             if (remaining.StartsWith(':'))
-                int.TryParse(remaining.Substring(1), out port);
+            {
+                if (!int.TryParse(remaining.Substring(1), out port) || port <= 0) return false;
+            }
             else port = 8388;
             return true;
         }
@@ -137,6 +139,6 @@ public class ShadowsocksParser : IShareLinkParser
         var colonIdx = input.LastIndexOf(':');
         if (colonIdx < 0) return false;
         address = input.Substring(0, colonIdx);
-        return int.TryParse(input.Substring(colonIdx + 1), out port);
+        return int.TryParse(input.Substring(colonIdx + 1), out port) && port > 0;
     }
 }

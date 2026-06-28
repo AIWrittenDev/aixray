@@ -21,6 +21,7 @@ public class ServerTester : IServerTester
         var httpPort = socksPort + 1;
 
         var configDir = Path.Combine(Path.GetTempPath(), "aixray-test-" + Guid.NewGuid().ToString("N")[..8]);
+        System.Diagnostics.Process? testProcess = null;
         try
         {
             Directory.CreateDirectory(configDir);
@@ -32,7 +33,7 @@ public class ServerTester : IServerTester
             var xrayPath = GetXrayPath();
             if (!File.Exists(xrayPath)) return null;
 
-            using var testProcess = new System.Diagnostics.Process();
+            testProcess = new System.Diagnostics.Process();
             testProcess.StartInfo = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = xrayPath,
@@ -47,16 +48,7 @@ public class ServerTester : IServerTester
 
             await Task.Delay(1500, ct);
 
-            var latency = await MeasureHttpLatencyAsync($"socks5://127.0.0.1:{socksPort}", ct);
-
-            try
-            {
-                testProcess.Kill(entireProcessTree: true);
-                await testProcess.WaitForExitAsync(ct);
-            }
-            catch { }
-
-            return latency;
+            return await MeasureHttpLatencyAsync($"socks5://127.0.0.1:{socksPort}", ct);
         }
         catch
         {
@@ -64,6 +56,16 @@ public class ServerTester : IServerTester
         }
         finally
         {
+            if (testProcess != null)
+            {
+                try
+                {
+                    if (!testProcess.HasExited)
+                        testProcess.Kill(entireProcessTree: true);
+                    testProcess.Dispose();
+                }
+                catch { }
+            }
             try { Directory.Delete(configDir, true); } catch { }
         }
     }
