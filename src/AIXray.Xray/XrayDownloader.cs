@@ -63,30 +63,43 @@ public class XrayDownloader : IXrayDownloader
         progress?.Report($"Downloading xray-core from: {downloadUrl}");
         Directory.CreateDirectory(_installPath);
 
+        // پاکسازی فایل‌های zip قبلی که ممکن است قفل باشند
+        foreach (var oldZip in Directory.GetFiles(_installPath, "xray-*.zip"))
+        {
+            try { File.Delete(oldZip); }
+            catch { /* locked by another process */ }
+        }
+
         using var response = await Http.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
 
         var totalBytes = response.Content.Headers.ContentLength ?? 0;
         var tempZip = Path.Combine(_installPath, $"xray-{Guid.NewGuid():N}.zip");
 
-        await using var contentStream = await response.Content.ReadAsStreamAsync();
-        await using var fileStream = File.Create(tempZip);
-        var buffer = new byte[81920];
-        long downloaded = 0;
-        int read;
-
-        while ((read = await contentStream.ReadAsync(buffer)) > 0)
+        await using (var contentStream = await response.Content.ReadAsStreamAsync())
+        await using (var fileStream = new FileStream(tempZip, FileMode.Create, FileAccess.Write, FileShare.None))
         {
-            await fileStream.WriteAsync(buffer.AsMemory(0, read));
-            downloaded += read;
-            if (totalBytes > 0)
+            var buffer = new byte[81920];
+            long downloaded = 0;
+            int read;
+
+            while ((read = await contentStream.ReadAsync(buffer)) > 0)
             {
-                var percent = (int)(downloaded * 100 / totalBytes);
-                progress?.Report($"Downloading... {percent}% ({downloaded / 1024 / 1024:F1} MB)");
+                await fileStream.WriteAsync(buffer.AsMemory(0, read));
+                downloaded += read;
+                if (totalBytes > 0)
+                {
+                    var percent = (int)(downloaded * 100 / totalBytes);
+                    progress?.Report($"Downloading... {percent}% ({downloaded / 1024 / 1024:F1} MB)");
+                }
             }
         }
 
         progress?.Report("Extracting archive...");
+
+        // بستن پروسه xray اگر در حال اجراست تا فایل‌ها قفل نباشند
+        KillRunningXray();
+
         ZipFile.ExtractToDirectory(tempZip, _installPath, overwriteFiles: true);
 
         try { File.Delete(tempZip); }
@@ -142,5 +155,14 @@ public class XrayDownloader : IXrayDownloader
 
         throw new InvalidOperationException(
             "Failed to fetch release info after 3 attempts (possibly rate-limited).");
+    }
+
+    private static void KillRunningXray()
+    {
+        foreach (var proc in System.Diagnostics.Process.GetProcessesByName("xray"))
+        {
+            try { proc.Kill(entireProcessTree: true); }
+            catch { /* already exited or access denied */ }
+        }
     }
 }

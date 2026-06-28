@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using AIXray.Core;
 using AIXray.Network;
@@ -40,6 +41,16 @@ public partial class App : System.Windows.Application
 
             var db = Services.GetRequiredService<IDatabaseInitializer>();
             await db.InitializeAsync();
+
+            // بستن xray هنگام خروج برنامه
+            Exit += (_, _) =>
+            {
+                foreach (var proc in Process.GetProcessesByName("xray"))
+                {
+                    try { proc.Kill(entireProcessTree: true); }
+                    catch { }
+                }
+            };
 
             var window = new MainWindow();
             window.Show();
