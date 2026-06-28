@@ -8,6 +8,8 @@ namespace AIXray.App;
 
 public partial class MainWindow : FluentWindow
 {
+    private SystemTrayManager? _trayManager;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -17,13 +19,33 @@ public partial class MainWindow : FluentWindow
             DataContext = App.Services.GetService(typeof(MainViewModel));
         }
 
+        // System tray
+        _trayManager = new SystemTrayManager(this);
+        _trayManager.Initialize();
+
+        // بررسی پارامتر --minimized
+        var args = Environment.GetCommandLineArgs();
+        if (args.Any(a => a.Equals("--minimized", StringComparison.OrdinalIgnoreCase)))
+        {
+            WindowState = WindowState.Minimized;
+            Hide();
+        }
+
         Loaded += async (_, _) =>
         {
-        if (DataContext is MainViewModel vm)
-        {
-            _ = vm.InitializeCommand.ExecuteAsync(null);
-        }
+            if (DataContext is MainViewModel vm)
+            {
+                _ = vm.InitializeCommand.ExecuteAsync(null);
+            }
         };
+    }
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        // بستن به جای خروج — به tray برود
+        e.Cancel = true;
+        WindowState = WindowState.Minimized;
+        Hide();
     }
 }
 

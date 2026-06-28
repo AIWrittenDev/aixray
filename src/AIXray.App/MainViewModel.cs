@@ -176,7 +176,7 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            var text = Clipboard.GetText();
+            var text = System.Windows.Clipboard.GetText();
             if (string.IsNullOrWhiteSpace(text)) return;
 
             var servers = _parserService.ParseLinks(text);
@@ -357,7 +357,7 @@ public partial class MainViewModel : ObservableObject
     private void CopyShareLink(Server? server)
     {
         if (server == null) return;
-        Clipboard.SetText(server.Url);
+        System.Windows.Clipboard.SetText(server.Url);
         StatusText = "لینک کپی شد";
     }
 
