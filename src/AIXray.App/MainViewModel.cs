@@ -198,10 +198,15 @@ public partial class MainViewModel : ObservableObject
             await _serverRepo.SetActiveAsync(SelectedServer.Id, active: true);
             AutoConnect = true;
             await SaveSettingsAsync();
-            await Task.Delay(500);
+            await _processManager.StopAsync();
+            _systemProxyManager.Disable();
+            await Task.Delay(300);
             if (_tunManager.RestartAsAdmin())
             {
-                System.Windows.Application.Current.Shutdown();
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    System.Windows.Application.Current.Shutdown();
+                });
             }
             return;
         }

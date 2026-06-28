@@ -60,6 +60,7 @@ public class TunManager : ITunManager
                 FileName = exePath,
                 UseShellExecute = true,
                 Verb = "runas",
+                WorkingDirectory = Path.GetDirectoryName(exePath) ?? "",
             };
             Process.Start(startInfo);
             return true;

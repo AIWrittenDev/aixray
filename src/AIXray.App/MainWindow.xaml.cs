@@ -65,8 +65,17 @@ public partial class MainWindow : FluentWindow
         }
     }
 
+    private bool _isShuttingDown = false;
+
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
+        if (_isShuttingDown)
+        {
+            // خروج واقعی از برنامه
+            base.OnClosing(e);
+            return;
+        }
+        // minimize به tray
         e.Cancel = true;
         WindowState = WindowState.Minimized;
         Hide();
@@ -74,6 +83,7 @@ public partial class MainWindow : FluentWindow
 
     private void OnExitClick(object sender, RoutedEventArgs e)
     {
+        _isShuttingDown = true;
         _trayManager?.ExitApplication();
     }
 }
