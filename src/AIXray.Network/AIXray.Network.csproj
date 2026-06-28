@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AIXray.Core\AIXray.Core.csproj" />
     <ProjectReference Include="..\AIXray.Xray\AIXray.Xray.csproj" />
+    <ProjectReference Include="..\AIXray.Storage\AIXray.Storage.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

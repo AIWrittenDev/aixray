@@ -4,6 +4,8 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AIXray.Core;
+using AIXray.Network;
+using AIXray.Proxies;
 using AIXray.Storage;
 using AIXray.ShareLinks;
 using AIXray.Xray;
@@ -20,6 +22,9 @@ public partial class MainViewModel : ObservableObject
     private readonly IXrayConfigBuilder _configBuilder;
     private readonly IXrayDownloader _xrayDownloader;
     private readonly IXrayProcessManager _processManager;
+    private readonly IServerTester _serverTester;
+    private readonly IAutoConnectService _autoConnectService;
+    private readonly ISystemProxyManager _systemProxyManager;
 
     public MainViewModel(
         IServerRepository serverRepo,
@@ -29,7 +34,10 @@ public partial class MainViewModel : ObservableObject
         ISubscriptionFetcher subscriptionFetcher,
         IXrayConfigBuilder configBuilder,
         IXrayDownloader xrayDownloader,
-        IXrayProcessManager processManager)
+        IXrayProcessManager processManager,
+        IServerTester serverTester,
+        IAutoConnectService autoConnectService,
+        ISystemProxyManager systemProxyManager)
     {
         _serverRepo = serverRepo;
         _groupRepo = groupRepo;
@@ -39,6 +47,9 @@ public partial class MainViewModel : ObservableObject
         _configBuilder = configBuilder;
         _xrayDownloader = xrayDownloader;
         _processManager = processManager;
+        _serverTester = serverTester;
+        _autoConnectService = autoConnectService;
+        _systemProxyManager = systemProxyManager;
 
         _processManager.LogReceived += (_, log) => LogEntries.Add(log);
         _processManager.StateChanged += (_, running) =>
@@ -72,7 +83,22 @@ public partial class MainViewModel : ObservableObject
             await _xrayDownloader.EnsureInstalledAsync();
             await LoadGroupsAsync();
             await LoadServersAsync();
-            StatusText = "آماده";
+
+            if (AutoConnect)
+            {
+                StatusText = "اتصال خودکار...";
+                var settings = await _settingsRepo.LoadAsync();
+                settings.Mode = CurrentMode;
+                var connected = await _autoConnectService.ConnectToBestAsync(settings);
+                if (connected)
+                    StatusText = "اتصال خودکار: متصل";
+                else
+                    StatusText = "اتصال خودکار: سرور فعالی یافت نشد";
+            }
+            else
+            {
+                StatusText = "آماده";
+            }
         }
         catch (Exception ex)
         {
@@ -110,14 +136,25 @@ public partial class MainViewModel : ObservableObject
         try
         {
             StatusText = "در حال اتصال...";
+
+            // غیرفعال‌سازی همه و فعال‌سازی سرور انتخاب شده
+            await _serverRepo.DeactivateAllAsync();
+            await _serverRepo.SetActiveAsync(SelectedServer.Id, active: true);
+
             var settings = await _settingsRepo.LoadAsync();
             settings.Mode = CurrentMode;
             var configDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "AIXray", "config-generated");
             var config = _configBuilder.BuildConfig(SelectedServer, settings, configDir);
-            var xrayPath = _xrayDownloader.XrayExePath;
-            await _processManager.StartAsync(xrayPath, config, configDir);
+            await _processManager.StartAsync(_xrayDownloader.XrayExePath, config, configDir);
+
+            // اعمال پروکسی سیستم
+            if (CurrentMode == ConnectionMode.SystemProxy)
+            {
+                _systemProxyManager.Enable(settings.LocalPort);
+            }
+
             StatusText = "متصل";
         }
         catch (Exception ex)
@@ -130,6 +167,7 @@ public partial class MainViewModel : ObservableObject
     private async Task DisconnectAsync()
     {
         await _processManager.StopAsync();
+        _systemProxyManager.Disable();
         StatusText = "قطع شد";
     }
 
@@ -262,11 +300,38 @@ public partial class MainViewModel : ObservableObject
     {
         if (server == null) return;
         StatusText = $"تست {server.Remark}...";
-        // TODO: Phase 6 — HTTPing test
-        server.LatencyMs = Random.Shared.Next(50, 500);
-        server.LastTest = DateTime.UtcNow;
-        await _serverRepo.UpdateAsync(server);
-        StatusText = $"{server.Remark}: {server.LatencyMs}ms";
+        try
+        {
+            var latency = await _serverTester.TestLatencyAsync(server);
+            server.LatencyMs = latency;
+            server.LastTest = DateTime.UtcNow;
+            await _serverRepo.UpdateAsync(server);
+            StatusText = latency.HasValue
+                ? $"{server.Remark}: {latency}ms"
+                : $"{server.Remark}: ناموفق";
+        }
+        catch
+        {
+            StatusText = $"تست {server.Remark}: خطا";
+        }
+    }
+
+    [RelayCommand]
+    private async Task TestAllLatencyAsync()
+    {
+        StatusText = "تست همه سرورها...";
+        foreach (var server in Servers)
+        {
+            try
+            {
+                var latency = await _serverTester.TestLatencyAsync(server);
+                server.LatencyMs = latency;
+                server.LastTest = DateTime.UtcNow;
+                await _serverRepo.UpdateAsync(server);
+            }
+            catch { }
+        }
+        StatusText = "تست کامل شد";
     }
 
     [RelayCommand]
@@ -324,19 +389,6 @@ public partial class MainViewModel : ObservableObject
             AutoConnect = dialog.AutoConnect;
             _ = SaveSettingsAsync();
         }
-    }
-
-    [RelayCommand]
-    private async Task TestAllLatencyAsync()
-    {
-        StatusText = "تست همه سرورها...";
-        foreach (var server in Servers)
-        {
-            server.LatencyMs = Random.Shared.Next(50, 500);
-            server.LastTest = DateTime.UtcNow;
-            await _serverRepo.UpdateAsync(server);
-        }
-        StatusText = "تست کامل شد";
     }
 
     [RelayCommand]

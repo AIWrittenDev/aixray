@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
 using AIXray.Core;
+using AIXray.Network;
+using AIXray.Proxies;
 using AIXray.Storage;
 using AIXray.ShareLinks;
 using AIXray.Xray;
@@ -44,6 +46,10 @@ public partial class App : Application
         services.AddSingleton<IXrayConfigBuilder, XrayConfigBuilder>();
         services.AddSingleton<IXrayDownloader, XrayDownloader>();
         services.AddSingleton<IXrayProcessManager, XrayProcessManager>();
+
+        services.AddSingleton<IServerTester, ServerTester>();
+        services.AddSingleton<IAutoConnectService, AutoConnectService>();
+        services.AddSingleton<ISystemProxyManager, SystemProxyManager>();
 
         services.AddSingleton<MainViewModel>();
     }
