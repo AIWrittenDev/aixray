@@ -197,17 +197,17 @@ Settings {
 - [ ] تبدیل دوطرفه Server ↔ outbound JSON
 - [ ] کامیت و پوش
 
-### ⬜ فاز ۳ — تولید کانفیگ + مدیریت پروسه
-- [ ] JSON config builder (inbounds/outbounds/routing/log)
-- [ ] XrayProcessManager (Start/Stop/Restart/log)
-- [ ] کامیت و پوش
+### ✅ فاز ۳ — تولید کانفیگ + مدیریت پروسه
+- [x] JSON config builder (inbounds/outbounds/routing/log)
+- [x] XrayProcessManager (Start/Stop/Restart/log)
+- [x] کامیت و پوش
 
-### ⬜ فاز ۴ — UI اسکلت
-- [ ] پنجره‌ی اصلی با Wpf-UI (NavigationView/MenuBar)
-- [ ] منوهای بالا (منو / گروه‌ها / تنظیمات)
-- [ ] تب‌های گروه‌ها + تب پیش‌فرض «همه‌ی کانفیگ‌ها»
-- [ ] popup ساخت کانفیگ سفارشی
-- [ ] کامیت و پوش
+### ✅ فاز ۴ — UI اسکلت
+- [x] پنجره‌ی اصلی با Wpf-UI (NavigationView/MenuBar)
+- [x] منوهای بالا (منو / گروه‌ها / تنظیمات)
+- [x] تب‌های گروه‌ها + تب پیش‌فرض «همه‌ی کانفیگ‌ها»
+- [x] popup ساخت کانفیگ سفارشی
+- [x] کامیت و پوش
 
 ### ⬜ فاز ۵ — لیست سرورها + کنترل‌ها
 - [ ] لیست سرورها با ستون‌ها و highlight سرور فعال
