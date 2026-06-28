@@ -27,9 +27,7 @@ public class TunManager : ITunManager
 
     public TunManager()
     {
-        _runtimeDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AIXray", "runtime");
+        _runtimeDir = Path.Combine(AppContext.BaseDirectory, "cores");
     }
 
     public bool IsRunningAsAdmin

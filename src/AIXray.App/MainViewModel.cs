@@ -25,6 +25,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IServerTester _serverTester;
     private readonly IAutoConnectService _autoConnectService;
     private readonly ISystemProxyManager _systemProxyManager;
+    private readonly ITunManager _tunManager;
 
     public MainViewModel(
         IServerRepository serverRepo,
@@ -37,7 +38,8 @@ public partial class MainViewModel : ObservableObject
         IXrayProcessManager processManager,
         IServerTester serverTester,
         IAutoConnectService autoConnectService,
-        ISystemProxyManager systemProxyManager)
+        ISystemProxyManager systemProxyManager,
+        ITunManager tunManager)
     {
         _serverRepo = serverRepo;
         _groupRepo = groupRepo;
@@ -50,6 +52,7 @@ public partial class MainViewModel : ObservableObject
         _serverTester = serverTester;
         _autoConnectService = autoConnectService;
         _systemProxyManager = systemProxyManager;
+        _tunManager = tunManager;
 
         _processManager.LogReceived += (_, log) => LogEntries.Add(log);
         _processManager.StateChanged += (_, running) =>
@@ -73,6 +76,23 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<string> LogEntries { get; } = new();
 
     public string ConnectionStatusText => IsConnected ? "متصل" : "قطع";
+
+    // وقتی حالت تغییر کند و متصل باشیم، اتصال مجددا برقرار می‌شود
+    partial void OnCurrentModeChanged(ConnectionMode value)
+    {
+        if (IsConnected && SelectedServer != null)
+        {
+            _ = RestartWithNewModeAsync();
+        }
+    }
+
+    private async Task RestartWithNewModeAsync()
+    {
+        StatusText = "تغییر حالت - اتصال مجدد...";
+        await DisconnectAsync();
+        await Task.Delay(300);
+        await ConnectAsync();
+    }
 
     [RelayCommand]
     private async Task ToggleConnectionAsync()
@@ -142,6 +162,15 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
+        // بررسی حالت TUN و دسترسی admin
+        if (CurrentMode == ConnectionMode.Tun && !_tunManager.IsRunningAsAdmin)
+        {
+            StatusText = "حالت TUN نیاز به دسترسی admin دارد - در حال اجرای مجدد...";
+            await Task.Delay(500);
+            _tunManager.RestartAsAdmin();
+            return;
+        }
+
         try
         {
             StatusText = "در حال اتصال...";
@@ -153,8 +182,7 @@ public partial class MainViewModel : ObservableObject
             var settings = await _settingsRepo.LoadAsync();
             settings.Mode = CurrentMode;
             var configDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "AIXray", "config-generated");
+                AppContext.BaseDirectory, "config-generated");
             var config = _configBuilder.BuildConfig(SelectedServer, settings, configDir);
             await _processManager.StartAsync(_xrayDownloader.XrayExePath, config, configDir);
 

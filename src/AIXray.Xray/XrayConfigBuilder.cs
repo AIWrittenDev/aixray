@@ -111,7 +111,7 @@ public class XrayConfigBuilder : IXrayConfigBuilder
                 {
                     ["tun"] = new JsonObject
                     {
-                        ["file"] = Path.Combine(configDir, "wintun.dll"),
+                        ["file"] = Path.Combine(AppContext.BaseDirectory, "cores", "wintun.dll"),
                     },
                 },
             },
