@@ -57,3 +57,9 @@ Thumbs.db
 
 ## ----- Local reference docs (not part of repo) -----
 llms-full.txt
+
+publish/
+publish2/
+*.user
+bin/
+obj/
