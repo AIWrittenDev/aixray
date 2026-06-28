@@ -5,6 +5,7 @@
         Title="AIXray" Height="700" Width="1100"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
+        FlowDirection="RightToLeft"
         Background="{DynamicResource ApplicationBackgroundBrush}">
 
     <Grid>

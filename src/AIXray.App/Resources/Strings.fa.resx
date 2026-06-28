@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="AppTitle" xml:space="preserve">
+    <value>AIXray</value>
+  </data>
+
+  <data name="Menu_File" xml:space="preserve">
+    <value>منو</value>
+  </data>
+  <data name="Menu_ImportFromFile" xml:space="preserve">
+    <value>وارد کردن از فایل</value>
+  </data>
+  <data name="Menu_ImportFromClipboard" xml:space="preserve">
+    <value>وارد کردن از کلیپ‌بورد</value>
+  </data>
+  <data name="Menu_CustomConfig" xml:space="preserve">
+    <value>ساخت کانفیگ سفارشی</value>
+  </data>
+  <data name="Menu_Groups" xml:space="preserve">
+    <value>گروه‌ها / سابسکرایب</value>
+  </data>
+  <data name="Menu_CreateGroup" xml:space="preserve">
+    <value>ایجاد گروه جدید</value>
+  </data>
+  <data name="Menu_UpdateWithProxy" xml:space="preserve">
+    <value>بروزرسانی با پروکسی</value>
+  </data>
+  <data name="Menu_UpdateNoProxy" xml:space="preserve">
+    <value>بروزرسانی بدون پروکسی</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>تنظیمات</value>
+  </data>
+
+  <data name="Groups_Title" xml:space="preserve">
+    <value>گروه‌ها</value>
+  </data>
+  <data name="Groups_Create" xml:space="preserve">
+    <value>+ ایجاد گروه</value>
+  </data>
+
+  <data name="Servers_Title" xml:space="preserve">
+    <value>سرورها</value>
+  </data>
+  <data name="Servers_ImportFile" xml:space="preserve">
+    <value>وارد کردن از فایل</value>
+  </data>
+  <data name="Servers_ImportClipboard" xml:space="preserve">
+    <value>وارد کردن از کلیپ‌بورد</value>
+  </data>
+  <data name="Servers_CustomConfig" xml:space="preserve">
+    <value>کانفیگ سفارشی</value>
+  </data>
+  <data name="Servers_TestAll" xml:space="preserve">
+    <value>تست تاخیر همه</value>
+  </data>
+
+  <data name="DataGrid_HeaderName" xml:space="preserve">
+    <value>نام</value>
+  </data>
+  <data name="DataGrid_HeaderProtocol" xml:space="preserve">
+    <value>پروتکل</value>
+  </data>
+  <data name="DataGrid_HeaderAddress" xml:space="preserve">
+    <value>آدرس</value>
+  </data>
+  <data name="DataGrid_HeaderPort" xml:space="preserve">
+    <value>پورت</value>
+  </data>
+  <data name="DataGrid_HeaderNetwork" xml:space="preserve">
+    <value>شبکه</value>
+  </data>
+  <data name="DataGrid_HeaderSecurity" xml:space="preserve">
+    <value>امنیت</value>
+  </data>
+  <data name="DataGrid_HeaderLatency" xml:space="preserve">
+    <value>تاخیر (ms)</value>
+  </data>
+
+  <data name="ContextMenu_Connect" xml:space="preserve">
+    <value>انتخاب و اتصال</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>ویرایش</value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="ContextMenu_CopyLink" xml:space="preserve">
+    <value>کپی لینک اشتراک</value>
+  </data>
+  <data name="ContextMenu_TestLatency" xml:space="preserve">
+    <value>تست تاخیر</value>
+  </data>
+
+  <data name="BottomBar_AutoConnect" xml:space="preserve">
+    <value>اتصال خودکار</value>
+  </data>
+  <data name="BottomBar_StatusReady" xml:space="preserve">
+    <value>آماده</value>
+  </data>
+  <data name="BottomBar_Connected" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="BottomBar_Disconnected" xml:space="preserve">
+    <value>قطع</value>
+  </data>
+  <data name="BottomBar_ModeSystemProxy" xml:space="preserve">
+    <value>پروکسی سیستم</value>
+  </data>
+  <data name="BottomBar_ModeTun" xml:space="preserve">
+    <value>TUN (VPN)</value>
+  </data>
+  <data name="BottomBar_ModeDirect" xml:space="preserve">
+    <value>مستقیم</value>
+  </data>
+
+  <data name="Dialog_CustomConfig_Title" xml:space="preserve">
+    <value>ساخت کانفیگ سفارشی</value>
+  </data>
+  <data name="Dialog_EditServer_Title" xml:space="preserve">
+    <value>ویرایش سرور</value>
+  </data>
+  <data name="Dialog_Settings_Title" xml:space="preserve">
+    <value>تنظیمات</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>انصراف</value>
+  </data>
+  <data name="Dialog_Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="Dialog_Add" xml:space="preserve">
+    <value>افزودن</value>
+  </data>
+
+  <data name="Field_Remark" xml:space="preserve">
+    <value>نام نمایشی</value>
+  </data>
+  <data name="Field_Protocol" xml:space="preserve">
+    <value>پروتکل</value>
+  </data>
+  <data name="Field_Address" xml:space="preserve">
+    <value>آدرس سرور</value>
+  </data>
+  <data name="Field_Port" xml:space="preserve">
+    <value>پورت</value>
+  </data>
+  <data name="Field_Network" xml:space="preserve">
+    <value>شبکه</value>
+  </data>
+  <data name="Field_Security" xml:space="preserve">
+    <value>امنیت</value>
+  </data>
+  <data name="Field_SNI" xml:space="preserve">
+    <value>SNI</value>
+  </data>
+  <data name="Field_Flow" xml:space="preserve">
+    <value>Flow</value>
+  </data>
+  <data name="Field_UUID" xml:space="preserve">
+    <value>UUID / رمز عبور</value>
+  </data>
+
+  <data name="Settings_ConnectionMode" xml:space="preserve">
+    <value>حالت اتصال</value>
+  </data>
+  <data name="Settings_AutoConnect" xml:space="preserve">
+    <value>اتصال خودکار هنگام اجرای برنامه</value>
+  </data>
+  <data name="Settings_LogLevel" xml:space="preserve">
+    <value>سطح لاگ</value>
+  </data>
+  <data name="Settings_LocalPort" xml:space="preserve">
+    <value>پورت لوکال</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>زبان</value>
+  </data>
+
+  <data name="Status_Starting" xml:space="preserve">
+    <value>در حال راه‌اندازی...</value>
+  </data>
+  <data name="Status_Connected" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="Status_Disconnected" xml:space="preserve">
+    <value>قطع شد</value>
+  </data>
+  <data name="Status_Connecting" xml:space="preserve">
+    <value>در حال اتصال...</value>
+  </data>
+  <data name="Status_NoServerSelected" xml:space="preserve">
+    <value>سروری انتخاب نشده است</value>
+  </data>
+  <data name="Status_LinksImported" xml:space="preserve">
+    <value>سرور وارد شد</value>
+  </data>
+  <data name="Status_NoValidLinks" xml:space="preserve">
+    <value>لینک معتبری یافت نشد</value>
+  </data>
+  <data name="Status_LinkCopied" xml:space="preserve">
+    <value>لینک کپی شد</value>
+  </data>
+  <data name="Status_ServerDeleted" xml:space="preserve">
+    <value>سرور حذف شد</value>
+  </data>
+  <data name="Status_GroupCreated" xml:space="preserve">
+    <value>گروه ایجاد شد</value>
+  </data>
+  <data name="Status_TestComplete" xml:space="preserve">
+    <value>تست کامل شد</value>
+  </data>
+</root>
