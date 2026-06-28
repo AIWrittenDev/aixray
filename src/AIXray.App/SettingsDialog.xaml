@@ -36,11 +36,11 @@
             <TextBlock Text="سطح لاگ" Margin="0,0,0,4"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
             <ComboBox x:Name="LogLevelCombo" Margin="0,0,0,16">
-                <ComboBoxItem Content="Debug" />
-                <ComboBoxItem Content="Info" />
-                <ComboBoxItem Content="Warning" IsSelected="True" />
-                <ComboBoxItem Content="Error" />
-                <ComboBoxItem Content="None" />
+                <ComboBoxItem Content="Debug" Tag="Debug" />
+                <ComboBoxItem Content="Info" Tag="Info" />
+                <ComboBoxItem Content="Warning" Tag="Warning" />
+                <ComboBoxItem Content="Error" Tag="Error" />
+                <ComboBoxItem Content="None" Tag="None" />
             </ComboBox>
 
             <!-- Local Port -->
@@ -53,7 +53,7 @@
             <TextBlock Text="زبان" Margin="0,0,0,4"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
             <ComboBox x:Name="LanguageCombo" Margin="0,0,0,16">
-                <ComboBoxItem Content="فارسی" Tag="fa" IsSelected="True" />
+                <ComboBoxItem Content="فارسی" Tag="fa" />
                 <ComboBoxItem Content="English" Tag="en" />
             </ComboBox>
         </StackPanel>

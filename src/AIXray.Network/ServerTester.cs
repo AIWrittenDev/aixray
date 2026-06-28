@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json.Nodes;
 using AIXray.Core;
 
 namespace AIXray.Network;
@@ -24,7 +25,7 @@ public class ServerTester : IServerTester
         {
             Directory.CreateDirectory(configDir);
             var configPath = Path.Combine(configDir, "config.json");
-            var tempConfig = BuildTempConfig(socksPort, httpPort);
+            var tempConfig = BuildTempConfig(server, socksPort, httpPort);
             var json = tempConfig.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(configPath, json);
 
@@ -104,26 +105,31 @@ public class ServerTester : IServerTester
         }
     }
 
-    private static System.Text.Json.Nodes.JsonObject BuildTempConfig(int socksPort, int httpPort)
+    /// <summary>
+    /// ساخت کانفیگ موقت با outbound واقعی سرور برای تست_latency.
+    /// </summary>
+    private static JsonObject BuildTempConfig(Server server, int socksPort, int httpPort)
     {
-        return new System.Text.Json.Nodes.JsonObject
+        var proxyOutbound = BuildServerOutbound(server);
+
+        return new JsonObject
         {
-            ["log"] = new System.Text.Json.Nodes.JsonObject { ["loglevel"] = "none" },
-            ["inbounds"] = new System.Text.Json.Nodes.JsonArray
+            ["log"] = new JsonObject { ["loglevel"] = "none" },
+            ["inbounds"] = new JsonArray
             {
-                new System.Text.Json.Nodes.JsonObject
+                new JsonObject
                 {
                     ["tag"] = "socks-in",
                     ["protocol"] = "socks",
                     ["listen"] = "127.0.0.1",
                     ["port"] = socksPort,
-                    ["settings"] = new System.Text.Json.Nodes.JsonObject
+                    ["settings"] = new JsonObject
                     {
                         ["auth"] = "noauth",
                         ["udp"] = true,
                     },
                 },
-                new System.Text.Json.Nodes.JsonObject
+                new JsonObject
                 {
                     ["tag"] = "http-in",
                     ["protocol"] = "http",
@@ -131,16 +137,176 @@ public class ServerTester : IServerTester
                     ["port"] = httpPort,
                 },
             },
-            ["outbounds"] = new System.Text.Json.Nodes.JsonArray
+            ["outbounds"] = new JsonArray
             {
-                new System.Text.Json.Nodes.JsonObject
+                proxyOutbound,
+                new JsonObject
                 {
-                    ["tag"] = "proxy",
+                    ["tag"] = "direct",
                     ["protocol"] = "freedom",
-                    ["settings"] = new System.Text.Json.Nodes.JsonObject(),
+                },
+            },
+            ["routing"] = new JsonObject
+            {
+                ["domainStrategy"] = "IPIfNonMatch",
+                ["rules"] = new JsonArray
+                {
+                    new JsonObject
+                    {
+                        ["type"] = "field",
+                        ["ip"] = new JsonArray { "geoip:private" },
+                        ["outboundTag"] = "direct",
+                    },
                 },
             },
         };
+    }
+
+    /// <summary>
+    /// ساخت outbound JSON از مدل Server (مشابه XrayConfigBuilder.BuildServerOutbound).
+    /// </summary>
+    private static JsonObject BuildServerOutbound(Server server)
+    {
+        var outbound = new JsonObject
+        {
+            ["tag"] = "proxy",
+            ["protocol"] = server.Protocol.ToXrayName(),
+            ["settings"] = BuildProtocolSettings(server),
+            ["streamSettings"] = BuildStreamSettings(server),
+        };
+        return outbound;
+    }
+
+    private static JsonObject BuildProtocolSettings(Server server)
+    {
+        var settings = new JsonObject();
+        switch (server.Protocol)
+        {
+            case Protocol.Vless:
+                settings["address"] = server.Address;
+                settings["port"] = server.Port;
+                settings["encryption"] = server.Encryption ?? "none";
+                if (!string.IsNullOrEmpty(server.Uuid))
+                    settings["id"] = server.Uuid;
+                if (!string.IsNullOrEmpty(server.Flow))
+                    settings["flow"] = server.Flow;
+                break;
+
+            case Protocol.Vmess:
+                settings["address"] = server.Address;
+                settings["port"] = server.Port;
+                if (!string.IsNullOrEmpty(server.Uuid))
+                    settings["id"] = server.Uuid;
+                settings["alterId"] = server.AlterId;
+                settings["security"] = "auto";
+                break;
+
+            case Protocol.Trojan:
+                settings["address"] = server.Address;
+                settings["port"] = server.Port;
+                if (!string.IsNullOrEmpty(server.Password))
+                    settings["password"] = server.Password;
+                break;
+
+            case Protocol.Shadowsocks:
+                settings["address"] = server.Address;
+                settings["port"] = server.Port;
+                if (!string.IsNullOrEmpty(server.Method))
+                    settings["method"] = server.Method;
+                if (!string.IsNullOrEmpty(server.Password))
+                    settings["password"] = server.Password;
+                break;
+        }
+        return settings;
+    }
+
+    private static JsonObject BuildStreamSettings(Server server)
+    {
+        var stream = new JsonObject
+        {
+            ["network"] = server.Network.ToXrayName(),
+            ["security"] = server.Security.ToXrayName(),
+        };
+
+        switch (server.Security)
+        {
+            case SecurityType.Tls:
+                var tls = new JsonObject();
+                if (!string.IsNullOrEmpty(server.Sni))
+                    tls["serverName"] = server.Sni;
+                if (!string.IsNullOrEmpty(server.Fingerprint))
+                    tls["fingerprint"] = server.Fingerprint;
+                if (!string.IsNullOrEmpty(server.Alpn))
+                {
+                    var alpnArray = new JsonArray();
+                    foreach (var alpn in server.Alpn.Split(','))
+                        alpnArray.Add(alpn.Trim());
+                    tls["alpn"] = alpnArray;
+                }
+                stream["tlsSettings"] = tls;
+                break;
+
+            case SecurityType.Reality:
+                var reality = new JsonObject();
+                if (!string.IsNullOrEmpty(server.Sni))
+                    reality["serverName"] = server.Sni;
+                if (!string.IsNullOrEmpty(server.Fingerprint))
+                    reality["fingerprint"] = server.Fingerprint;
+                if (!string.IsNullOrEmpty(server.PublicKey))
+                    reality["publicKey"] = server.PublicKey;
+                if (!string.IsNullOrEmpty(server.ShortId))
+                    reality["shortId"] = server.ShortId;
+                if (!string.IsNullOrEmpty(server.SpiderX))
+                    reality["spiderX"] = server.SpiderX;
+                stream["realitySettings"] = reality;
+                break;
+        }
+
+        switch (server.Network)
+        {
+            case NetworkType.WebSocket:
+                var ws = new JsonObject();
+                if (!string.IsNullOrEmpty(server.WsPath))
+                    ws["path"] = server.WsPath;
+                if (!string.IsNullOrEmpty(server.WsHost))
+                    ws["headers"] = new JsonObject { ["Host"] = server.WsHost };
+                stream["wsSettings"] = ws;
+                break;
+
+            case NetworkType.Grpc:
+                var grpc = new JsonObject();
+                if (!string.IsNullOrEmpty(server.GrpcServiceName))
+                    grpc["serviceName"] = server.GrpcServiceName;
+                grpc["multiMode"] = server.GrpcMultiMode;
+                stream["grpcSettings"] = grpc;
+                break;
+
+            case NetworkType.Kcp:
+                var kcp = new JsonObject();
+                kcp["header"] = new JsonObject { ["type"] = "none" };
+                stream["kcpSettings"] = kcp;
+                break;
+
+            case NetworkType.HttpUpgrade:
+                var hup = new JsonObject();
+                if (!string.IsNullOrEmpty(server.HttpPath))
+                    hup["path"] = server.HttpPath;
+                if (!string.IsNullOrEmpty(server.HttpHost))
+                    hup["host"] = server.HttpHost;
+                stream["httpupgradeSettings"] = hup;
+                break;
+
+            case NetworkType.Xhttp:
+                var xh = new JsonObject();
+                if (!string.IsNullOrEmpty(server.HttpPath))
+                    xh["path"] = server.HttpPath;
+                if (!string.IsNullOrEmpty(server.HttpHost))
+                    xh["host"] = server.HttpHost;
+                stream["xhttpSettings"] = xh;
+                break;
+        }
+
+        return stream;
     }
 
     private static string GetXrayPath()

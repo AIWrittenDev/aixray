@@ -126,7 +126,6 @@ public class XrayProcessManager : IXrayProcessManager
             try
             {
                 processToKill.Kill(entireProcessTree: true);
-                // WaitForExitAsync با CancellationToken و timeout سفارشی
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 await processToKill.WaitForExitAsync(cts.Token);
             }
@@ -136,7 +135,11 @@ public class XrayProcessManager : IXrayProcessManager
             }
             catch (OperationCanceledException)
             {
-                // timeout — پروسه به‌زور بسته نشد
+                // timeout
+            }
+            finally
+            {
+                processToKill.Dispose();
             }
             StateChanged?.Invoke(this, false);
         }

@@ -50,6 +50,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IServerTester, ServerTester>();
         services.AddSingleton<IAutoConnectService, AutoConnectService>();
         services.AddSingleton<ISystemProxyManager, SystemProxyManager>();
+        services.AddSingleton<ITunManager, TunManager>();
 
         services.AddSingleton<MainViewModel>();
     }

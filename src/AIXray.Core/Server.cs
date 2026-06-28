@@ -1,98 +1,109 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 namespace AIXray.Core;
 
 /// <summary>
 /// یک سرور/کانفیگ پروکسی که می‌تواند در xray استفاده شود.
-/// این مدل خالص (POCO) است و فیلدهای لازم برای همه‌ی پروتکل‌ها را در خود دارد.
-/// لینک اشتراک اصلی در <see cref="Url"/> نگهداری می‌شود تا همیشه قابل بازتولید باشد.
 /// </summary>
-public class Server
+public class Server : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     public long Id { get; set; }
 
     /// <summary>شناسه‌ی گروه (null = بدون گروه / همه‌ی کانفیگ‌ها).</summary>
     public long? GroupId { get; set; }
 
+    private string _remark = string.Empty;
     /// <summary>نام نمایشی سرور.</summary>
-    public string Remark { get; set; } = string.Empty;
+    public string Remark
+    {
+        get => _remark;
+        set { _remark = value; OnPropertyChanged(); }
+    }
 
     // ----- اطلاعات اتصال پایه -----
-    public Protocol Protocol { get; set; }
-    public string Address { get; set; } = string.Empty;
-    public int Port { get; set; }
+    private Protocol _protocol;
+    public Protocol Protocol
+    {
+        get => _protocol;
+        set { _protocol = value; OnPropertyChanged(); }
+    }
+
+    private string _address = string.Empty;
+    public string Address
+    {
+        get => _address;
+        set { _address = value; OnPropertyChanged(); }
+    }
+
+    private int _port;
+    public int Port
+    {
+        get => _port;
+        set { _port = value; OnPropertyChanged(); }
+    }
 
     // ----- فیلدهای پروتکل‌اختصاصی -----
-    /// <summary>VLESS/VMess: UUID.</summary>
     public string? Uuid { get; set; }
-
-    /// <summary>VLESS: encryption (مثلاً none یا mlkem768...).</summary>
     public string? Encryption { get; set; }
-
-    /// <summary>Trojan/Shadowsocks: گذرواژه.</summary>
     public string? Password { get; set; }
-
-    /// <summary>Shadowsocks: cipher method (مثلاً aes-256-gcm).</summary>
     public string? Method { get; set; }
-
-    /// <summary>VLESS: flow (مثلاً xtls-rprx-vision).</summary>
     public string? Flow { get; set; }
-
-    /// <summary>VMess: alterId (معمولاً 0).</summary>
     public int AlterId { get; set; }
 
     // ----- لایه‌ی انتقال (streamSettings) -----
-    public NetworkType Network { get; set; } = NetworkType.Raw;
-    public SecurityType Security { get; set; } = SecurityType.None;
+    private NetworkType _network = NetworkType.Raw;
+    public NetworkType Network
+    {
+        get => _network;
+        set { _network = value; OnPropertyChanged(); }
+    }
 
-    /// <summary>TLS/REALITY: Server Name Indication.</summary>
+    private SecurityType _security = SecurityType.None;
+    public SecurityType Security
+    {
+        get => _security;
+        set { _security = value; OnPropertyChanged(); }
+    }
+
     public string? Sni { get; set; }
-
-    /// <summary>TLS/REALITY: اثر انگشت uTLS (مثلاً chrome).</summary>
     public string? Fingerprint { get; set; }
-
-    /// <summary>TLS: ALPN (مثلاً h2,http/1.1).</summary>
     public string? Alpn { get; set; }
-
-    /// <summary>REALITY: کلید عمومی (publicKey).</summary>
     public string? PublicKey { get; set; }
-
-    /// <summary>REALITY: shortId.</summary>
     public string? ShortId { get; set; }
-
-    /// <summary>REALITY: spiderX.</summary>
     public string? SpiderX { get; set; }
-
-    /// <summary>WebSocket: مسیر.</summary>
     public string? WsPath { get; set; }
-
-    /// <summary>WebSocket: هدر Host.</summary>
     public string? WsHost { get; set; }
-
-    /// <summary>gRPC: serviceName.</summary>
     public string? GrpcServiceName { get; set; }
-
-    /// <summary>gRPC: multiMode.</summary>
     public bool GrpcMultiMode { get; set; }
-
-    /// <summary>HTTP伪装/HTTPUpgrade: host.</summary>
     public string? HttpHost { get; set; }
-
-    /// <summary>HTTP伪装/HTTPUpgrade: مسیر.</summary>
     public string? HttpPath { get; set; }
 
     // ----- وضعیت و لینک اصلی -----
-    /// <summary>لینک اشتراک اصلی (share link) — برای بازتولید و اشتراک‌گذاری.</summary>
     public string Url { get; set; } = string.Empty;
 
-    /// <summary>تأخیر اندازه‌گیری‌شده بر حسب میلی‌ثانیه (null = تست نشده/ناموفق).</summary>
-    public int? LatencyMs { get; set; }
+    private int? _latencyMs;
+    /// <summary>تأخیر اندازه‌گیری‌شده بر حسب میلی‌ثانیه.</summary>
+    public int? LatencyMs
+    {
+        get => _latencyMs;
+        set { _latencyMs = value; OnPropertyChanged(); }
+    }
 
+    private bool _isActive;
     /// <summary>آیا این سرور هم‌اکنون انتخاب/فعال است؟</summary>
-    public bool IsActive { get; set; }
+    public bool IsActive
+    {
+        get => _isActive;
+        set { _isActive = value; OnPropertyChanged(); }
+    }
 
-    /// <summary>زمان آخرین تست.</summary>
     public DateTime? LastTest { get; set; }
-
-    /// <summary>زمان افزودن به لیست.</summary>
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>خلاصه‌ی کوتاه برای نمایش (آدرس:پورت).</summary>

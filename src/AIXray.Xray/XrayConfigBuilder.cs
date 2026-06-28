@@ -280,6 +280,12 @@ public class XrayConfigBuilder : IXrayConfigBuilder
                 stream["grpcSettings"] = grpc;
                 break;
 
+            case NetworkType.Kcp:
+                var kcp = new JsonObject();
+                kcp["header"] = new JsonObject { ["type"] = "none" };
+                stream["kcpSettings"] = kcp;
+                break;
+
             case NetworkType.HttpUpgrade:
                 var hup = new JsonObject();
                 if (!string.IsNullOrEmpty(server.HttpPath))

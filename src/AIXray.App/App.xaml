@@ -11,11 +11,9 @@
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:BoolToAppearanceConverter x:Key="ConnectButtonConverter" />
-            <converters:BoolToIconConverter x:Key="ConnectIconConverter" />
-            <converters:ConnectButtonConverter x:Key="ConnectButtonAppearanceConverter" />
+            <converters:ConnectButtonConverter x:Key="ConnectButtonConverter" />
+            <converters:ConnectIconConverter x:Key="ConnectIconConverter" />
             <converters:ConnectToggleConverter x:Key="ConnectToggleConverter" />
-            <converters:ConnectIconConverter x:Key="ConnectIconConverter2" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

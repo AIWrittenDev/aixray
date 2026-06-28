@@ -380,14 +380,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenSettings()
+    private async Task OpenSettingsAsync()
     {
-        var dialog = new SettingsDialog(CurrentMode, AutoConnect);
+        var currentSettings = await _settingsRepo.LoadAsync();
+        var dialog = new SettingsDialog(currentSettings);
         if (dialog.ShowDialog() == true)
         {
+            currentSettings.Mode = dialog.SelectedMode;
+            currentSettings.AutoConnect = dialog.AutoConnect;
+            currentSettings.LogLevel = dialog.SelectedLogLevel;
+            currentSettings.LocalPort = dialog.LocalPort;
+            currentSettings.Language = dialog.SelectedLanguage;
             CurrentMode = dialog.SelectedMode;
             AutoConnect = dialog.AutoConnect;
-            _ = SaveSettingsAsync();
+            await _settingsRepo.SaveAsync(currentSettings);
+            StatusText = "تنظیمات ذخیره شد";
         }
     }
 
@@ -403,11 +410,9 @@ public partial class MainViewModel : ObservableObject
 
     public async Task SaveSettingsAsync()
     {
-        var settings = new AppSettings
-        {
-            Mode = CurrentMode,
-            AutoConnect = AutoConnect,
-        };
+        var settings = await _settingsRepo.LoadAsync();
+        settings.Mode = CurrentMode;
+        settings.AutoConnect = AutoConnect;
         await _settingsRepo.SaveAsync(settings);
     }
 }
