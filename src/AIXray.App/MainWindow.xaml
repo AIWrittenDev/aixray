@@ -23,7 +23,7 @@
                     <MenuItem Header="منو">
                         <MenuItem Header="وارد کردن از فایل" Command="{Binding ImportFromFileCommand}">
                             <MenuItem.Icon>
-                                <ui:SymbolIcon Symbol="OpenFile24" />
+                                <ui:SymbolIcon Symbol="Document24" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="وارد کردن از کلیپ‌بورد" Command="{Binding ImportFromClipboardCommand}">
@@ -131,7 +131,7 @@
                     <ToolBarTray DockPanel.Dock="Top" Margin="8,8,8,0">
                         <ToolBar Band="0">
                             <Button ToolTip="وارد کردن از فایل" Command="{Binding ImportFromFileCommand}">
-                                <ui:SymbolIcon Symbol="OpenFile24" />
+                                <ui:SymbolIcon Symbol="Document24" />
                             </Button>
                             <Button ToolTip="وارد کردن از کلیپ‌بورد" Command="{Binding ImportFromClipboardCommand}">
                                 <ui:SymbolIcon Symbol="Copy24" />
@@ -250,7 +250,7 @@
                 <!-- Connect / Disconnect toggle -->
                 <ui:Button Grid.Column="3"
                            Appearance="{Binding IsConnected, Converter={StaticResource ConnectButtonConverter}}"
-                           Command="{Binding IsConnected, Converter={StaticResource ConnectToggleConverter}, ConverterParameter={x:Reference MainWindowRoot}}"
+                           Command="{Binding ToggleConnectionCommand}"
                            HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
                         <ui:SymbolIcon Symbol="{Binding IsConnected, Converter={StaticResource ConnectIconConverter}}"

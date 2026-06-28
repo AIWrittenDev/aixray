@@ -13,14 +13,42 @@ namespace AIXray.App;
 public partial class App : System.Windows.Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
+    private static readonly string LogPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "AIXray", "crash.log");
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-        Services = services.BuildServiceProvider();
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            var ex = args.ExceptionObject as Exception;
+            File.WriteAllText(LogPath, $"[CRASH]\n{ex}\n{DateTime.Now}");
+        };
+        DispatcherUnhandledException += (_, args) =>
+        {
+            File.WriteAllText(LogPath, $"[DISPATCHER]\n{args.Exception}\n{DateTime.Now}");
+            args.Handled = true;
+        };
+
+        try
+        {
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            Services = services.BuildServiceProvider();
+
+            var db = Services.GetRequiredService<IDatabaseInitializer>();
+            await db.InitializeAsync();
+
+            var window = new MainWindow();
+            window.Show();
+        }
+        catch (Exception ex)
+        {
+            File.WriteAllText(LogPath, $"[STARTUP]\n{ex}\n{DateTime.Now}");
+            System.Windows.MessageBox.Show($"Startup error: {ex.Message}", "AIXray", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -28,6 +56,7 @@ public partial class App : System.Windows.Application
         var dataDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AIXray", "data");
+        Directory.CreateDirectory(dataDir);
         var dbPath = Path.Combine(dataDir, "aixray.db");
 
         services.AddSingleton<IDbConnectionFactory>(new SqliteConnectionFactory(dbPath));

@@ -75,6 +75,15 @@ public partial class MainViewModel : ObservableObject
     public string ConnectionStatusText => IsConnected ? "متصل" : "قطع";
 
     [RelayCommand]
+    private async Task ToggleConnectionAsync()
+    {
+        if (IsConnected)
+            await DisconnectAsync();
+        else
+            await ConnectAsync();
+    }
+
+    [RelayCommand]
     private async Task InitializeAsync()
     {
         StatusText = "در حال راه‌اندازی...";
