@@ -270,6 +270,25 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void EditServer(Server? server)
+    {
+        if (server == null) return;
+        var dialog = new EditServerDialog(server);
+        if (dialog.ShowDialog() == true && dialog.Result != null)
+        {
+            _ = UpdateServerAsync(dialog.Result);
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpdateServerAsync(Server server)
+    {
+        await _serverRepo.UpdateAsync(server);
+        await LoadServersAsync();
+        StatusText = $"سرور '{server.Remark}' بروزرسانی شد";
+    }
+
+    [RelayCommand]
     private void CopyShareLink(Server? server)
     {
         if (server == null) return;
