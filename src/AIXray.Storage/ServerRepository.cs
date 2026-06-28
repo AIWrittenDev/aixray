@@ -63,13 +63,13 @@ public class ServerRepository : IServerRepository
                 uuid, encryption, password, method, flow, alter_id,
                 network, security, sni, fingerprint, alpn, public_key, short_id, spider_x,
                 ws_path, ws_host, grpc_service_name, grpc_multi_mode,
-                http_host, http_path, url, latency_ms, is_active, last_test, added_at
+                http_host, http_path, xhttp_extra, url, latency_ms, is_active, last_test, added_at
             ) VALUES (
                 @GroupId, @Remark, @Protocol, @Address, @Port,
                 @Uuid, @Encryption, @Password, @Method, @Flow, @AlterId,
                 @Network, @Security, @Sni, @Fingerprint, @Alpn, @PublicKey, @ShortId, @SpiderX,
                 @WsPath, @WsHost, @GrpcServiceName, @GrpcMultiMode,
-                @HttpHost, @HttpPath, @Url, @LatencyMs, @IsActive, @LastTest, @AddedAt
+                @HttpHost, @HttpPath, @XhttpExtra, @Url, @LatencyMs, @IsActive, @LastTest, @AddedAt
             );
             SELECT LAST_INSERT_ROWID();
         """;
@@ -83,7 +83,7 @@ public class ServerRepository : IServerRepository
             Security = server.Security.ToXrayName(),
             server.Sni, server.Fingerprint, server.Alpn, server.PublicKey, server.ShortId, server.SpiderX,
             server.WsPath, server.WsHost, server.GrpcServiceName, server.GrpcMultiMode,
-            server.HttpHost, server.HttpPath, server.Url, server.LatencyMs,
+            server.HttpHost, server.HttpPath, server.XhttpExtra, server.Url, server.LatencyMs,
             IsActive = server.IsActive ? 1 : 0,
             LastTest = server.LastTest?.ToString("o"),
             AddedAt = server.AddedAt.ToString("o"),
@@ -108,7 +108,7 @@ public class ServerRepository : IServerRepository
                 public_key = @PublicKey, short_id = @ShortId, spider_x = @SpiderX,
                 ws_path = @WsPath, ws_host = @WsHost,
                 grpc_service_name = @GrpcServiceName, grpc_multi_mode = @GrpcMultiMode,
-                http_host = @HttpHost, http_path = @HttpPath,
+                http_host = @HttpHost, http_path = @HttpPath, xhttp_extra = @XhttpExtra,
                 url = @Url, latency_ms = @LatencyMs, is_active = @IsActive,
                 last_test = @LastTest, added_at = @AddedAt
             WHERE id = @Id
@@ -122,7 +122,7 @@ public class ServerRepository : IServerRepository
             Security = server.Security.ToXrayName(),
             server.Sni, server.Fingerprint, server.Alpn, server.PublicKey, server.ShortId, server.SpiderX,
             server.WsPath, server.WsHost, server.GrpcServiceName, server.GrpcMultiMode,
-            server.HttpHost, server.HttpPath, server.Url, server.LatencyMs,
+            server.HttpHost, server.HttpPath, server.XhttpExtra, server.Url, server.LatencyMs,
             IsActive = server.IsActive ? 1 : 0,
             LastTest = server.LastTest?.ToString("o"),
             AddedAt = server.AddedAt.ToString("o"),
@@ -159,7 +159,7 @@ public class ServerRepository : IServerRepository
             s.network, s.security,
             s.sni, s.fingerprint, s.alpn, s.public_key, s.short_id, s.spider_x,
             s.ws_path, s.ws_host, s.grpc_service_name, s.grpc_multi_mode,
-            s.http_host, s.http_path,
+            s.http_host, s.http_path, s.xhttp_extra,
             s.url, s.latency_ms, s.is_active, s.last_test, s.added_at
         FROM servers s
     """;
@@ -168,18 +168,18 @@ public class ServerRepository : IServerRepository
     {
         return new Server
         {
-            Id = r.id,
-            GroupId = r.group_id as long?,
+            Id = (long)r.id,
+            GroupId = r.group_id != null ? (long?)r.group_id : null,
             Remark = r.remark ?? "",
             Protocol = EnumMappings.ProtocolFromName(r.protocol),
             Address = r.address ?? "",
-            Port = r.port,
+            Port = (int)(long)r.port,
             Uuid = r.uuid,
             Encryption = r.encryption,
             Password = r.password,
             Method = r.method,
             Flow = r.flow,
-            AlterId = r.alter_id,
+            AlterId = (int)(long)r.alter_id,
             Network = EnumMappings.NetworkFromName(r.network),
             Security = EnumMappings.SecurityFromName(r.security),
             Sni = r.sni,
@@ -191,12 +191,13 @@ public class ServerRepository : IServerRepository
             WsPath = r.ws_path,
             WsHost = r.ws_host,
             GrpcServiceName = r.grpc_service_name,
-            GrpcMultiMode = r.grpc_multi_mode != 0,
+            GrpcMultiMode = (long)r.grpc_multi_mode != 0,
             HttpHost = r.http_host,
             HttpPath = r.http_path,
+            XhttpExtra = r.xhttp_extra,
             Url = r.url ?? "",
-            LatencyMs = r.latency_ms as int?,
-            IsActive = r.is_active != 0,
+            LatencyMs = r.latency_ms != null ? (int?)(long)r.latency_ms : null,
+            IsActive = (long)r.is_active != 0,
             LastTest = ParseDateTime(r.last_test),
             AddedAt = ParseDateTime(r.added_at) ?? DateTime.UtcNow,
         };

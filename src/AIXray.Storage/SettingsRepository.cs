@@ -35,12 +35,12 @@ public class SettingsRepository : ISettingsRepository
         return new AppSettings
         {
             LogLevel = EnumMappings.LogLevelFromName(row.log_level),
-            LocalPort = row.local_port,
-            ShareLocal = row.share_local != 0,
+            LocalPort = (int)(long)row.local_port,
+            ShareLocal = (long)row.share_local != 0,
             Mode = EnumFromName(row.mode),
             Language = EnumFromLanguage(row.language),
             XrayBinaryPath = row.xray_binary_path,
-            AutoConnect = row.auto_connect != 0,
+            AutoConnect = (long)row.auto_connect != 0,
         };
     }
 

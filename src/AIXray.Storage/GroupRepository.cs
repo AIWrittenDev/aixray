@@ -96,13 +96,13 @@ public class GroupRepository : IGroupRepository
 
     private static Group MapRow(dynamic r) => new()
     {
-        Id = r.id,
+        Id = (long)r.id,
         Name = r.name ?? "",
         SubscriptionUrl = r.subscription_url,
-        AutoUpdate = r.auto_update != 0,
-        UpdateIntervalMinutes = r.update_interval_min,
+        AutoUpdate = (long)r.auto_update != 0,
+        UpdateIntervalMinutes = (int)(long)r.update_interval_min,
         LastUpdate = ParseDateTime(r.last_update),
-        IsDefault = r.is_default != 0,
+        IsDefault = (long)r.is_default != 0,
     };
 
     private static DateTime? ParseDateTime(object? value)

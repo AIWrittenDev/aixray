@@ -63,6 +63,7 @@ public class DatabaseInitializer : IDatabaseInitializer
                 grpc_multi_mode    INTEGER NOT NULL DEFAULT 0,
                 http_host   TEXT,
                 http_path   TEXT,
+                xhttp_extra TEXT,
                 url         TEXT    NOT NULL DEFAULT '',
                 latency_ms  INTEGER,
                 is_active   INTEGER NOT NULL DEFAULT 0,
@@ -91,6 +92,14 @@ public class DatabaseInitializer : IDatabaseInitializer
                 INSERT INTO settings (id, log_level, local_port, share_local, mode, language, auto_connect)
                 VALUES (1, 'warning', 10808, 0, 'SystemProxy', 'fa', 0);
             """);
+        }
+
+        // مهاجرت: اضافه کردن ستون xhttp_extra اگر وجود ندارد
+        var hasXhttpExtra = await conn.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM pragma_table_info('servers') WHERE name = 'xhttp_extra'");
+        if (hasXhttpExtra == 0)
+        {
+            await conn.ExecuteAsync("ALTER TABLE servers ADD COLUMN xhttp_extra TEXT");
         }
     }
 }
