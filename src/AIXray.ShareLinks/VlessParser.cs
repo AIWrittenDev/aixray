@@ -76,6 +76,7 @@ public class VlessParser : IShareLinkParser
                 GrpcServiceName = queryParams.GetValueOrDefault("serviceName"),
                 HttpPath = queryParams.GetValueOrDefault("path"),
                 HttpHost = queryParams.GetValueOrDefault("host"),
+                XhttpExtra = queryParams.GetValueOrDefault("extra"),
             };
 
             server.Url = link;

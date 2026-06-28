@@ -301,6 +301,20 @@ public class XrayConfigBuilder : IXrayConfigBuilder
                     xh["path"] = server.HttpPath;
                 if (!string.IsNullOrEmpty(server.HttpHost))
                     xh["host"] = server.HttpHost;
+                // اضافه کردن تنظیمات extra xhttp (xPaddingBytes, sessionKey, headers)
+                if (!string.IsNullOrEmpty(server.XhttpExtra))
+                {
+                    try
+                    {
+                        var extraObj = JsonNode.Parse(server.XhttpExtra) as JsonObject;
+                        if (extraObj != null)
+                        {
+                            foreach (var prop in extraObj)
+                                xh[prop.Key] = prop.Value;
+                        }
+                    }
+                    catch { /* extra is not valid JSON, ignore */ }
+                }
                 stream["xhttpSettings"] = xh;
                 break;
         }

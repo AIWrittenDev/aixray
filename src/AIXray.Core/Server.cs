@@ -83,6 +83,7 @@ public class Server : INotifyPropertyChanged
     public bool GrpcMultiMode { get; set; }
     public string? HttpHost { get; set; }
     public string? HttpPath { get; set; }
+    public string? XhttpExtra { get; set; }
 
     // ----- وضعیت و لینک اصلی -----
     public string Url { get; set; } = string.Empty;

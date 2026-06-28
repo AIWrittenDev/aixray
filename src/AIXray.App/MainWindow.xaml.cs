@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using Wpf.Ui.Controls;
 
 namespace AIXray.App;
@@ -25,6 +26,19 @@ public partial class MainWindow : FluentWindow
             WindowState = WindowState.Minimized;
             Hide();
         }
+
+        // پشتیبانی از Ctrl+V برای پیست از کلیپ‌بورد
+        PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (DataContext is MainViewModel vm)
+                {
+                    _ = vm.ImportFromClipboardCommand.ExecuteAsync(null);
+                    e.Handled = true;
+                }
+            }
+        };
 
         Loaded += async (_, _) =>
         {
