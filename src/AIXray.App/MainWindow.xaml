@@ -148,7 +148,8 @@
                     </ToolBarTray>
 
                     <!-- DataGrid -->
-                    <DataGrid Grid.Row="0" ItemsSource="{Binding Servers}" SelectedItem="{Binding SelectedServer}"
+                    <DataGrid x:Name="ServerDataGrid" Grid.Row="0"
+                              ItemsSource="{Binding Servers}" SelectedItem="{Binding SelectedServer}"
                               AutoGenerateColumns="False" IsReadOnly="True"
                               Background="Transparent" BorderThickness="0"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal"
@@ -158,33 +159,33 @@
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="انتخاب و اتصال" Command="{Binding ConnectCommand}"
-                                          CommandParameter="{Binding SelectedServer, RelativeSource={RelativeSource AncestorType=Window}}">
+                                          CommandParameter="{Binding DataContext.SelectedServer, ElementName=ServerDataGrid}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Play24" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
                                 <MenuItem Header="ویرایش" Command="{Binding EditServerCommand}"
-                                          CommandParameter="{Binding SelectedServer, RelativeSource={RelativeSource AncestorType=Window}}">
+                                          CommandParameter="{Binding DataContext.SelectedServer, ElementName=ServerDataGrid}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Edit24" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="حذف" Command="{Binding DeleteServerCommand}"
-                                          CommandParameter="{Binding SelectedServer, RelativeSource={RelativeSource AncestorType=Window}}">
+                                          CommandParameter="{Binding DataContext.SelectedServer, ElementName=ServerDataGrid}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Delete24" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator />
                                 <MenuItem Header="کپی لینک اشتراک" Command="{Binding CopyShareLinkCommand}"
-                                          CommandParameter="{Binding SelectedServer, RelativeSource={RelativeSource AncestorType=Window}}">
+                                          CommandParameter="{Binding DataContext.SelectedServer, ElementName=ServerDataGrid}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Copy24" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="تست تاخیر" Command="{Binding TestLatencyCommand}"
-                                          CommandParameter="{Binding SelectedServer, RelativeSource={RelativeSource AncestorType=Window}}">
+                                          CommandParameter="{Binding DataContext.SelectedServer, ElementName=ServerDataGrid}">
                                     <MenuItem.Icon>
                                         <ui:SymbolIcon Symbol="Gauge24" />
                                     </MenuItem.Icon>

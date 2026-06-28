@@ -178,24 +178,31 @@ public partial class MainViewModel : ObservableObject
         {
             StatusText = "در حال اتصال...";
 
+            // متوقف کردن اتصال قبلی
+            await _processManager.StopAsync();
+            _systemProxyManager.Disable();
+
             // غیرفعال‌سازی همه و فعال‌سازی سرور انتخاب شده
             await _serverRepo.DeactivateAllAsync();
             await _serverRepo.SetActiveAsync(SelectedServer.Id, active: true);
 
             var settings = await _settingsRepo.LoadAsync();
             settings.Mode = CurrentMode;
-            var configDir = Path.Combine(
-                AppContext.BaseDirectory, "config-generated");
+            var configDir = Path.Combine(AppContext.BaseDirectory, "config-generated");
             var config = _configBuilder.BuildConfig(SelectedServer, settings, configDir);
             await _processManager.StartAsync(_xrayDownloader.XrayExePath, config, configDir);
 
-            // اعمال پروکسی سیستم
+            // اعمال پروکسی سیستم فقط در حالت SystemProxy
             if (CurrentMode == ConnectionMode.SystemProxy)
             {
                 _systemProxyManager.Enable(settings.LocalPort);
             }
 
-            StatusText = "متصل";
+            StatusText = CurrentMode == ConnectionMode.Tun
+                ? "متصل (TUN)"
+                : CurrentMode == ConnectionMode.Direct
+                    ? "متصل (مستقیم)"
+                    : "متصل";
         }
         catch (Exception ex)
         {
@@ -280,7 +287,9 @@ public partial class MainViewModel : ObservableObject
         {
             dialog.Owner = mainWindow;
             mainWindow.Show();
+            mainWindow.WindowState = WindowState.Normal;
             mainWindow.Activate();
+            await Task.Delay(100);
         }
         if (dialog.ShowDialog() != true) return;
 
@@ -385,7 +394,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void EditServer(Server? server)
+    private async Task EditServerAsync(Server? server)
     {
         if (server == null) return;
         var dialog = new EditServerDialog(server);
@@ -394,11 +403,13 @@ public partial class MainViewModel : ObservableObject
         {
             dialog.Owner = mainWindow;
             mainWindow.Show();
+            mainWindow.WindowState = WindowState.Normal;
             mainWindow.Activate();
+            await Task.Delay(100);
         }
         if (dialog.ShowDialog() == true && dialog.Result != null)
         {
-            _ = UpdateServerAsync(dialog.Result);
+            await UpdateServerAsync(dialog.Result);
         }
     }
 
@@ -419,7 +430,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenCustomConfig()
+    private async Task OpenCustomConfigAsync()
     {
         var dialog = new CustomConfigDialog();
         var mainWindow = System.Windows.Application.Current.MainWindow;
@@ -427,11 +438,13 @@ public partial class MainViewModel : ObservableObject
         {
             dialog.Owner = mainWindow;
             mainWindow.Show();
+            mainWindow.WindowState = WindowState.Normal;
             mainWindow.Activate();
+            await Task.Delay(100);
         }
         if (dialog.ShowDialog() == true && dialog.Result != null)
         {
-            _ = AddCustomServerAsync(dialog.Result);
+            await AddCustomServerAsync(dialog.Result);
         }
     }
 
@@ -453,7 +466,9 @@ public partial class MainViewModel : ObservableObject
         {
             dialog.Owner = mainWindow;
             mainWindow.Show();
+            mainWindow.WindowState = WindowState.Normal;
             mainWindow.Activate();
+            await Task.Delay(100);
         }
         if (dialog.ShowDialog() == true)
         {

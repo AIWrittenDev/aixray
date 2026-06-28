@@ -23,7 +23,7 @@ public class XrayConfigBuilder : IXrayConfigBuilder
             ["log"] = BuildLog(settings),
             ["inbounds"] = BuildInbounds(settings, configDir),
             ["outbounds"] = BuildOutbounds(activeServer),
-            ["routing"] = BuildRouting(),
+            ["routing"] = BuildRouting(settings),
         };
         return config;
     }
@@ -309,28 +309,41 @@ public class XrayConfigBuilder : IXrayConfigBuilder
         return stream;
     }
 
-    private static JsonObject BuildRouting()
+    private static JsonObject BuildRouting(AppSettings settings)
     {
+        var rules = new JsonArray
+        {
+            // IPهای خصوصی مستقیم
+            new JsonObject
+            {
+                ["type"] = "field",
+                ["ip"] = new JsonArray { "geoip:private" },
+                ["outboundTag"] = "direct",
+            },
+            // DNS sniffed به direct
+            new JsonObject
+            {
+                ["type"] = "field",
+                ["protocol"] = new JsonArray { "dns" },
+                ["outboundTag"] = "direct",
+            },
+        };
+
+        // در حالت TUN، ترافیک xray خودش نباید لوپ شود
+        if (settings.Mode == ConnectionMode.Tun)
+        {
+            rules.Add(new JsonObject
+            {
+                ["type"] = "field",
+                ["processName"] = new JsonArray { "xray.exe", "AIXray.App.exe" },
+                ["outboundTag"] = "direct",
+            });
+        }
+
         return new JsonObject
         {
             ["domainStrategy"] = "IPIfNonMatch",
-            ["rules"] = new JsonArray
-            {
-                // IPهای خصوصی مستقیم
-                new JsonObject
-                {
-                    ["type"] = "field",
-                    ["ip"] = new JsonArray { "geoip:private" },
-                    ["outboundTag"] = "direct",
-                },
-                // DNS sniffed به direct
-                new JsonObject
-                {
-                    ["type"] = "field",
-                    ["protocol"] = new JsonArray { "dns" },
-                    ["outboundTag"] = "direct",
-                },
-            },
+            ["rules"] = rules,
         };
     }
 }
