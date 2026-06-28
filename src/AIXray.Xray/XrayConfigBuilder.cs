@@ -329,6 +329,7 @@ public class XrayConfigBuilder : IXrayConfigBuilder
             },
         };
 
+        // همه ترافیک دیگر به صورت پیش‌فرض به اولین outbound (proxy) می‌رود
         return new JsonObject
         {
             ["domainStrategy"] = "IPIfNonMatch",
