@@ -329,17 +329,6 @@ public class XrayConfigBuilder : IXrayConfigBuilder
             },
         };
 
-        // در حالت TUN، ترافیک xray خودش نباید لوپ شود
-        if (settings.Mode == ConnectionMode.Tun)
-        {
-            rules.Add(new JsonObject
-            {
-                ["type"] = "field",
-                ["processName"] = new JsonArray { "xray.exe", "AIXray.App.exe" },
-                ["outboundTag"] = "direct",
-            });
-        }
-
         return new JsonObject
         {
             ["domainStrategy"] = "IPIfNonMatch",

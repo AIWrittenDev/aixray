@@ -55,13 +55,11 @@ public class AutoConnectService : IAutoConnectService
         await _serverRepo.DeactivateAllAsync();
         await _serverRepo.SetActiveAsync(server.Id, active: true);
 
-        var configDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AIXray", "config-generated");
+        var configDir = Path.Combine(AppContext.BaseDirectory, "config-generated");
         var config = _configBuilder.BuildConfig(server, settings, configDir);
         await _processManager.StartAsync(_xrayDownloader.XrayExePath, config, configDir);
 
-        // اعمال پروکسی سیستم
+        // اعمال پروکسی سیستم فقط در حالت SystemProxy
         if (settings.Mode == ConnectionMode.SystemProxy)
         {
             _systemProxyManager.Enable(settings.LocalPort);

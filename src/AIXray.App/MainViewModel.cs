@@ -123,15 +123,34 @@ public partial class MainViewModel : ObservableObject
             CurrentMode = savedSettings.Mode;
             AutoConnect = savedSettings.AutoConnect;
 
+            // اتصال خودکار: پیدا کردن سرور فعال و اتصال
             if (savedSettings.AutoConnect)
             {
                 StatusText = "اتصال خودکار...";
-                savedSettings.Mode = CurrentMode;
-                var connected = await _autoConnectService.ConnectToBestAsync(savedSettings);
-                if (connected)
-                    StatusText = "اتصال خودکار: متصل";
+
+                // اگر TUN و غیر ادمین، restart as admin
+                if (savedSettings.Mode == ConnectionMode.Tun && !_tunManager.IsRunningAsAdmin)
+                {
+                    StatusText = "حالت TUN نیاز به دسترسی admin دارد...";
+                    await Task.Delay(500);
+                    _tunManager.RestartAsAdmin();
+                    return;
+                }
+
+                // پیدا کردن سرور فعال از DB
+                var allServers = await _serverRepo.GetAllAsync();
+                var active = allServers.FirstOrDefault(s => s.IsActive);
+                if (active != null)
+                {
+                    SelectedServer = active;
+                    await ConnectAsync();
+                }
                 else
-                    StatusText = "اتصال خودکار: سرور فعالی یافت نشد";
+                {
+                    savedSettings.Mode = CurrentMode;
+                    var connected = await _autoConnectService.ConnectToBestAsync(savedSettings);
+                    StatusText = connected ? "اتصال خودکار: متصل" : "اتصال خودکار: سرور فعالی یافت نشد";
+                }
             }
             else
             {
@@ -175,6 +194,10 @@ public partial class MainViewModel : ObservableObject
         if (CurrentMode == ConnectionMode.Tun && !_tunManager.IsRunningAsAdmin)
         {
             StatusText = "حالت TUN نیاز به دسترسی admin دارد - در حال اجرای مجدد...";
+            await _serverRepo.DeactivateAllAsync();
+            await _serverRepo.SetActiveAsync(SelectedServer.Id, active: true);
+            AutoConnect = true;
+            await SaveSettingsAsync();
             await Task.Delay(500);
             if (_tunManager.RestartAsAdmin())
             {
