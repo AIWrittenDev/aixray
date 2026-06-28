@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AIXray.Core\AIXray.Core.csproj" />
+    <ProjectReference Include="..\AIXray.ShareLinks\AIXray.ShareLinks.csproj" />
+    <ProjectReference Include="..\AIXray.Xray\AIXray.Xray.csproj" />
+    <ProjectReference Include="..\AIXray.Network\AIXray.Network.csproj" />
+    <ProjectReference Include="..\AIXray.Proxies\AIXray.Proxies.csproj" />
+    <ProjectReference Include="..\AIXray.Storage\AIXray.Storage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+</Project>

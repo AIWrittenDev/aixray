@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AIXray.App/AIXray.App.csproj" />
+    <Project Path="src/AIXray.Core/AIXray.Core.csproj" />
+    <Project Path="src/AIXray.Network/AIXray.Network.csproj" />
+    <Project Path="src/AIXray.Proxies/AIXray.Proxies.csproj" />
+    <Project Path="src/AIXray.ShareLinks/AIXray.ShareLinks.csproj" />
+    <Project Path="src/AIXray.Storage/AIXray.Storage.csproj" />
+    <Project Path="src/AIXray.Xray/AIXray.Xray.csproj" />
+  </Folder>
+</Solution>
