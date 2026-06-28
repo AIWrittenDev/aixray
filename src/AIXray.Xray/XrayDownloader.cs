@@ -42,8 +42,7 @@ public class XrayDownloader : IXrayDownloader
     public XrayDownloader(string? installPath = null)
     {
         _installPath = installPath ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AIXray", "runtime");
+            AppContext.BaseDirectory, "cores");
     }
 
     public string InstallPath => _installPath;
@@ -68,7 +67,7 @@ public class XrayDownloader : IXrayDownloader
         response.EnsureSuccessStatusCode();
 
         var totalBytes = response.Content.Headers.ContentLength ?? 0;
-        var tempZip = Path.Combine(_installPath, "xray-latest.zip");
+        var tempZip = Path.Combine(_installPath, $"xray-{Guid.NewGuid():N}.zip");
 
         await using var contentStream = await response.Content.ReadAsStreamAsync();
         await using var fileStream = File.Create(tempZip);
@@ -89,7 +88,9 @@ public class XrayDownloader : IXrayDownloader
 
         progress?.Report("Extracting archive...");
         ZipFile.ExtractToDirectory(tempZip, _installPath, overwriteFiles: true);
-        File.Delete(tempZip);
+
+        try { File.Delete(tempZip); }
+        catch { /* file may be locked by another process */ }
 
         // بررسی وجود فایل‌های ضروری
         if (!File.Exists(XrayExePath))
