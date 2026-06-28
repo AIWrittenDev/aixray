@@ -1,0 +1,94 @@
+<ui:FluentWindow x:Class="AIXray.App.CustomConfigDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="ساخت کانفیگ سفارشی" Height="520" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ExtendsContentIntoTitleBar="True"
+        Background="{DynamicResource ApplicationBackgroundBrush}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="ساخت کانفیگ سفارشی" FontSize="18" FontWeight="SemiBold"
+                   Margin="0,0,0,16" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+                <!-- Remark -->
+                <TextBlock Text="نام نمایشی" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ui:TextBox x:Name="RemarkBox" PlaceholderText="مثلاً: سرور آلمان" Margin="0,0,0,12" />
+
+                <!-- Protocol -->
+                <TextBlock Text="پروتکل" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ComboBox x:Name="ProtocolCombo" Margin="0,0,0,12">
+                    <ComboBoxItem Content="VLESS" IsSelected="True" />
+                    <ComboBoxItem Content="VMess" />
+                    <ComboBoxItem Content="Trojan" />
+                    <ComboBoxItem Content="Shadowsocks" />
+                </ComboBox>
+
+                <!-- Address + Port -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="آدرس سرور" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <ui:TextBox x:Name="AddressBox" PlaceholderText="example.com" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                        <TextBlock Text="پورت" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <ui:TextBox x:Name="PortBox" PlaceholderText="443" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- UUID / Password -->
+                <TextBlock x:Name="CredentialLabel" Text="UUID" Margin="0,0,0,4"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ui:TextBox x:Name="CredentialBox" PlaceholderText="uuid یا رمز عبور" Margin="0,0,0,12" />
+
+                <!-- Network -->
+                <TextBlock Text="شبکه" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ComboBox x:Name="NetworkCombo" Margin="0,0,0,12">
+                    <ComboBoxItem Content="TCP (Raw)" IsSelected="True" />
+                    <ComboBoxItem Content="WebSocket" />
+                    <ComboBoxItem Content="gRPC" />
+                    <ComboBoxItem Content="HTTPUpgrade" />
+                    <ComboBoxItem Content="XHTTP" />
+                </ComboBox>
+
+                <!-- Security -->
+                <TextBlock Text="امنیت" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ComboBox x:Name="SecurityCombo" Margin="0,0,0,12">
+                    <ComboBoxItem Content="None" IsSelected="True" />
+                    <ComboBoxItem Content="TLS" />
+                    <ComboBoxItem Content="Reality" />
+                </ComboBox>
+
+                <!-- SNI -->
+                <TextBlock Text="SNI" Margin="0,0,0,4" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ui:TextBox x:Name="SniBox" PlaceholderText="server.name" Margin="0,0,0,12" />
+
+                <!-- Flow (VLESS) -->
+                <TextBlock x:Name="FlowLabel" Text="Flow" Margin="0,0,0,4"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ui:TextBox x:Name="FlowBox" PlaceholderText="xtls-rprx-vision" Margin="0,0,0,12" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <ui:Button Content="انصراف" Appearance="Secondary" Click="OnCancel" Margin="0,0,8,0"
+                       Padding="20,6" />
+            <ui:Button Content="افزودن" Appearance="Primary" Click="OnOk"
+                       Padding="20,6" />
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>

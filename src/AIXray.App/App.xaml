@@ -1,9 +1,21 @@
 ﻿<Application x:Class="AIXray.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:AIXray.App"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:AIXray.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToAppearanceConverter x:Key="ConnectButtonConverter" />
+            <converters:BoolToIconConverter x:Key="ConnectIconConverter" />
+            <converters:ConnectButtonConverter x:Key="ConnectButtonAppearanceConverter" />
+            <converters:ConnectToggleConverter x:Key="ConnectToggleConverter" />
+            <converters:ConnectIconConverter x:Key="ConnectIconConverter2" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

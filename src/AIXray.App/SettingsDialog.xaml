@@ -1,0 +1,69 @@
+<ui:FluentWindow x:Class="AIXray.App.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="تنظیمات" Height="400" Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ExtendsContentIntoTitleBar="True"
+        Background="{DynamicResource ApplicationBackgroundBrush}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="تنظیمات برنامه" FontSize="18" FontWeight="SemiBold"
+                   Margin="0,0,0,16" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+        <StackPanel Grid.Row="1">
+            <!-- Mode -->
+            <TextBlock Text="حالت اتصال" Margin="0,0,0,4"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <ComboBox x:Name="ModeCombo" Margin="0,0,0,16">
+                <ComboBoxItem Content="پروکسی سیستم" Tag="SystemProxy" />
+                <ComboBoxItem Content="TUN (VPN)" Tag="Tun" />
+                <ComboBoxItem Content="مستقیم" Tag="Direct" />
+            </ComboBox>
+
+            <!-- Auto Connect -->
+            <CheckBox x:Name="AutoConnectCheck" Content="اتصال خودکار هنگام اجرای برنامه"
+                      Margin="0,0,0,16" />
+
+            <!-- Log Level -->
+            <TextBlock Text="سطح لاگ" Margin="0,0,0,4"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <ComboBox x:Name="LogLevelCombo" Margin="0,0,0,16">
+                <ComboBoxItem Content="Debug" />
+                <ComboBoxItem Content="Info" />
+                <ComboBoxItem Content="Warning" IsSelected="True" />
+                <ComboBoxItem Content="Error" />
+                <ComboBoxItem Content="None" />
+            </ComboBox>
+
+            <!-- Local Port -->
+            <TextBlock Text="پورت لوکال" Margin="0,0,0,4"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <ui:TextBox x:Name="LocalPortBox" PlaceholderText="10808" Width="120"
+                         HorizontalAlignment="Left" Margin="0,0,0,16" />
+
+            <!-- Language -->
+            <TextBlock Text="زبان" Margin="0,0,0,4"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <ComboBox x:Name="LanguageCombo" Margin="0,0,0,16">
+                <ComboBoxItem Content="فارسی" Tag="fa" IsSelected="True" />
+                <ComboBoxItem Content="English" Tag="en" />
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <ui:Button Content="انصراف" Appearance="Secondary" Click="OnCancel" Margin="0,0,8,0"
+                       Padding="20,6" />
+            <ui:Button Content="ذخیره" Appearance="Primary" Click="OnSave"
+                       Padding="20,6" />
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>
